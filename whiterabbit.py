@@ -9,14 +9,28 @@ graph = Graph(password="rabbithole")
 
 class WhiteRabbit(object):
 
-    def __init__(self, seeds):
+    def __init__(self, ransom_seeds, scam_seeds):
         self.graph = graph
-        self.seeds = seeds
+        self.ransom_seeds = ransom_seeds
+        self.scam_seeds = scam_seeds
         self.current_family = None
 
+    def _import_seeds(self, seed_type, seed_file_name):
+        self.graph.run("CREATE INDEX ON :BTC_ADDRESS(address)")
+        self.graph.run("CREATE INDEX ON :{}(family)".format(seed_type.upper()))
+        self.graph.run(
+            "USING PERIODIC COMMIT 500 " +
+            "LOAD CSV WITH HEADERS " +
+            "FROM 'file:///{}' AS csvLine ".format(seed_file_name) +
+            "MERGE (m:SCAM { family: csvLine.{} }) ".format(seed_type.lower()) +
+            "MERGE (a:BTC_ADDRESS { address: csvLine.address }) " +
+            "MERGE (m)-[:SEED { source: csvLine.source }]->(a)")
+
     def start(self):
-        if self.seeds:
+        if self.ransom_seeds:
             self.import_ransomware_seeds()
+        if self.scam_seeds:
+            self.import_scam_seeds()
 
     @staticmethod
     def serialize_malware_family(malware):
@@ -101,15 +115,14 @@ class WhiteRabbit(object):
 
     def import_ransomware_seeds(self):
         """
-        Imports the BTC seed addresses with their associated malware family name and original source.
+        Imports the BTC ransomware seed addresses with their associated family name and original source.
         """
         logger.info("Importing seed ransomware addresses")
-        self.graph.run("CREATE INDEX ON :BTC_ADDRESS(address)")
-        self.graph.run("CREATE INDEX ON :MALWARE(family)")
-        self.graph.run(
-            "USING PERIODIC COMMIT 500 "
-            "LOAD CSV WITH HEADERS "
-            "FROM 'file:///seed_addresses.csv' AS csvLine "
-            "MERGE (m:MALWARE { family: csvLine.malware }) "
-            "MERGE (a:BTC_ADDRESS { address: csvLine.address }) "
-            "MERGE (m)-[:SEED { source: csvLine.source }]->(a)")
+        self._import_seeds(seed_type='malware', seed_file_name='seed_ransom_addresses.csv')
+
+    def import_scam_seeds(self):
+        """
+        Imports the BTC scam seed addresses with their associated family name and original source.
+        """
+        logger.info("Importing seed scam addresses")
+        self._import_seeds(seed_type='scam', seed_file_name='seed_scam_addresses.csv')

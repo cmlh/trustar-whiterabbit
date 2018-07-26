@@ -71,12 +71,12 @@ if __name__ == '__main__':
 
     # Get command line arguments
     args = parse_cmd_line_args()
-    seeds = args.seeds
-    if seeds:
-        logger.info("Seeds found: %s", seeds)
+    ransom_seeds = args.seeds
+    if ransom_seeds:
+        logger.info("Seeds found: %s", ransom_seeds)
 
     # Start TruStash
-    whiterabbit = WhiteRabbit(seeds)
+    whiterabbit = WhiteRabbit(ransom_seeds)
     whiterabbit.start()
 
-    app.run(debug=True, port=8080)
+    app.run(debug=True, port=5000)
