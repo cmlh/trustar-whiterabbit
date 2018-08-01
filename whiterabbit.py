@@ -1,115 +1,91 @@
 import logging
-from py2neo import Graph
-from json import dumps
-from flask import Response, request
+import psycopg2
+import psycopg2.extras
+from blocksciTool import BlockSciTool
+# from json import dumps
+# from flask import Response
 
 logger = logging.getLogger(__name__)
-graph = Graph(password="rabbithole")
 
 
 class WhiteRabbit(object):
 
     def __init__(self, seeds):
-        self.graph = graph
         self.seeds = seeds
-        self.current_family = None
+        logger.info("Initializing BlockSci blockchain")
+        self.chain = BlockSciTool()
+        logger.info("Connecting to PostgreSQL data store")
+        try:
+            self.connection = psycopg2.connect(host='localhost',
+                                               dbname='whiterabbit',
+                                               user='alice',
+                                               password='rabbithole',
+                                               connect_timeout=3)
+            self.cursor = None
+            self.import_seeds()
+        except Exception as error:
+            logger.error("Connection to PostgreSQL data store failed with error: %s", str(error))
 
-    def start(self):
-        if self.seeds:
-            self.import_ransomware_seeds()
+    def compute_cluster_by_address(self, address):
+        self.chain.cluster_by_no_change(address)
 
-    @staticmethod
-    def serialize_malware_family(malware):
-        return {
-            # 'id': malware['id'],
-            'family': malware['family'],
-        }
+    def compute_clusters(self):
+        logger.info("Computing clusters")
+        seeds_by_family = self.get_seeds_by_family()
+        for seeds in seeds_by_family:
+            for seed in seeds:
+                # Compute cluster
+                self.compute_cluster_by_address(seed)
 
-    @staticmethod
-    def serialize_btc_addr(btc_addr):
-        return {
-            # 'id': btc_addr['id'],
-            # 'hash160': btc_addr['hash160'],
-            'address': btc_addr[0],
-            'source': btc_addr[1]
-            # 'n_tx': btc_addr['n_tx'],
-            # 'n_undredeemed': btc_addr['n_undredeemed'],
-            # 'total_received': btc_addr['total_received'],
-            # 'total_sent': btc_addr['total_sent'],
-            # 'final_balance': btc_addr['final_balance']
-        }
-
-    @staticmethod
-    def serialize_btc_txn(txn):
-        return {
-            # 'id': txn['id'],
-            'hash': txn['hash'],
-            'ver': txn['ver'],
-            # 'vin_sz': txn['vin_sz'],
-            # 'vout_sz': txn['vout_sz'],
-            'lock_time': txn['lock_time'],
-            # 'relayed_by': txn['relayed_by'],
-            'size': txn['size'],
-            'block_height': txn['block_height'],
-            'tx_index': txn['tx_index']
-        }
-
-    def get_graph(self, family):
-        logger.info("Getting graph for %s", family)
-        results = self.graph.run(
-            "MATCH (m:MALWARE {family:{family}})-[r:SEED]->(seed:BTC_ADDRESS) "
-            "WITH m.family as family, seed.address as seed_address, r.source as source "
-            "LIMIT 500 "
-            "RETURN family, collect([seed_address, source]) as seeds "
-            "LIMIT 1", {"family": family}).data()
-        nodes = []
-        rels = []
-        for record in results:
-            nodes.append({"id": record["family"], "group": 1, "label": "malware"})
-            for seed in record['seeds']:
-                seed_address = {"id": seed[0], "group": 2, "label": "seed_address"}
-                nodes.append(seed_address)
-                rels.append({"source": record["family"], "target": seed[0], "value": 1})
-        return Response(dumps({"nodes": nodes, "links": rels}), mimetype="application/json")
-
-    def get_search(self, q):
-        logger.info("Searching for %s", q)
-        results = self.graph.run(
-            "MATCH (malware:MALWARE) "
-            "WHERE malware.family =~ {family} "
-            "RETURN malware", {"family": "(?i).*" + q + ".*"}).data()
-        return Response(dumps([self.serialize_malware_family(record['malware']) for record in results]),
-                        mimetype="application/json")
-
-    def get_malware_family(self, family):
-        logger.info("Getting malware family for %s", family)
-        results = self.graph.run(
-            "MATCH (malware:MALWARE {family:{family}}) "
-            "OPTIONAL MATCH (malware)-[r:SEED]->(seed:BTC_ADDRESS) "
-            "RETURN malware.family as family, collect([seed.address,r.source]) as seeds "
-            "LIMIT 1", {"family": family}).data()
-
-        result = results[0]
-        self.current_family = result["family"]
-        return Response(dumps({"family": result['family'],
-                               "seeds": [self.serialize_btc_addr(member) for member in result['seeds']]}),
-                        mimetype="application/json")
+    def get_seeds_by_family(self, malware=None):
+        logger.info("Fetching seed addresses families")
+        try:
+            if malware:
+                query = "SELECT * " \
+                        "FROM whiterabbit.seeds " \
+                        "WHERE s_malware = \'{}\' " \
+                        "GROUP BY s_malware;".format(malware)
+            else:
+                query = "SELECT * " \
+                        "FROM whiterabbit.seeds " \
+                        "GROUP BY s_malware;"
+            logger.debug(query)
+            self.cursor.execute(query)
+            return self.cursor.fetchall()
+        except Exception as error:
+            logger.error("Failed to fetch seed addresses with error: %s", str(error))
+            return []
 
     def get_malware_families(self):
-        results = self.graph.run("MATCH (malware:MALWARE) RETURN malware.family as family").data()
-        return Response(dumps({"malwareFamilies": results}), mimetype="application/json")
+        logger.info("Fetching malware families")
+        try:
+            query = "SELECT DISTINCT s_malware FROM whiterabbit.seeds;"
+            logger.debug(query)
+            self.cursor.execute(query)
+            self.cursor.fetchall()
+        except Exception as error:
+            logger.error("Failed to fetch malware families with error: %s", str(error))
 
-    def import_ransomware_seeds(self):
+    def import_seeds(self):
         """
         Imports the BTC seed addresses with their associated malware family name and original source.
         """
-        logger.info("Importing seed ransomware addresses")
-        self.graph.run("CREATE INDEX ON :BTC_ADDRESS(address)")
-        self.graph.run("CREATE INDEX ON :MALWARE(family)")
-        self.graph.run(
-            "USING PERIODIC COMMIT 500 "
-            "LOAD CSV WITH HEADERS "
-            "FROM 'file:///seed_addresses.csv' AS csvLine "
-            "MERGE (m:MALWARE { family: csvLine.malware }) "
-            "MERGE (a:BTC_ADDRESS { address: csvLine.address }) "
-            "MERGE (m)-[:SEED { source: csvLine.source }]->(a)")
+        logger.info("Importing seed addresses for malware families from CSV")
+        try:
+            query = "CREATE TABLE IF NOT EXISTS whiterabbit.seeds (" \
+                    "s_id BIGINT NOT NULL, " \
+                    "s_address VARCHAR NOT NULL, " \
+                    "s_malware VARCHAR NOT NULL, " \
+                    "s_start VARCHAR, " \
+                    "s_created TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_DATE, " \
+                    "s_last_computed TIMESTAMP WITH TIME ZONE, " \
+                    "CONSTRAINT pk_seeds PRIMARY KEY (s_id), " \
+                    "UNIQUE (s_address, s_malware)" \
+                    "); " \
+                    "COPY whiterabbit.seeds(s_address,s_malware,s_start) " \
+                    "FROM 'seed_addresses.csv' DELIMITER ',' CSV;"
+            logger.debug(query)
+            self.cursor.execute(query)
+            self.connection.commit()
+        except Exception as error:
+            logger.error("Failed to store seed addresses from CSV with error: %s", str(error))

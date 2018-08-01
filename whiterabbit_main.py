@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import logging
-import argparse
 from flask import Flask, request
 from whiterabbit import WhiteRabbit
 
@@ -31,35 +30,13 @@ def get_graph(family):
 
 @app.route("/search")
 def get_search():
-    try:
-        q = request.args["q"]
-        if q:
-            return whiterabbit.get_search(q)
-    except KeyError:
+    query = request.args["q"]
+    if query:
+        logger.debug("Searching for %s", query)
+        return whiterabbit.get_search(query)
+    else:
+        logger.debug("No search term passed")
         return []
-
-
-def parse_cmd_line_args():
-    """
-    Process the command line arguments given while starting the script
-    """
-    parser = argparse.ArgumentParser("WhiteRabbit")
-    parser.add_argument("-s",
-                        "--seeds",
-                        help="Path to BTC seed ransomware addresses CSV",
-                        required=False)
-    args = parser.parse_args()
-    return args
-
-
-def signal_handler(signum, frame):
-    """ Handles Signals
-    :param signum: Signal Number
-    :param frame: frame
-    :return:
-    """
-    logger.info("Received signal {}".format(signum))
-    # whiterabbit.stop()
 
 
 if __name__ == '__main__':
@@ -69,14 +46,7 @@ if __name__ == '__main__':
     """
     logger.info("-------------< WhiteRabbit Application >-------------")
 
-    # Get command line arguments
-    args = parse_cmd_line_args()
-    seeds = args.seeds
-    if seeds:
-        logger.info("Seeds found: %s", seeds)
+    # Start WhiteRabbit
+    whiterabbit = WhiteRabbit()
 
-    # Start TruStash
-    whiterabbit = WhiteRabbit(seeds)
-    whiterabbit.start()
-
-    app.run(debug=True, port=8080)
+    app.run(debug=True, port=5009)

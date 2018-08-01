@@ -24,7 +24,7 @@ WhiteRabbit runs on `python 3.6.x`.
 
 ## Running WhiteRabbit
 
-`python3 whiterabbit_main.py --seeds data/seed_addresses.csv`
+`python3 whiterabbit_main.py --seeds import/seed_addresses.csv`
 
 ## Configurations
 

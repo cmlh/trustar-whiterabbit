@@ -1,37 +1,21 @@
-version: '3'
+version: '2'
 services:
 
-  neo4j:
-    image: neo4j:3.0
-    ports:
-      - "7474:7474"
-      - "7473:7473"
-      - "7687:7687"
-    expose:
-      - "7474"
-      - "7473"
-      - "7687"
+  postgres:
+    image: postgres:9.6.3
     volumes:
-#      - ./data:/data
-      - ./import:/import
+     - ./postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
     environment:
-      - NEO4J_AUTH=neo4j/rabbithole
-      - NEO4J_dbms_directories_import=
-#      - NEO4J_dbms_allowFormatMigration=true
-#      - NEO4J_dbms_memory_heap_initial__size=4G
-#      - NEO4J_dbms_memory_heap_max__size=4G
+      - POSTGRES_USER=alice
+      - POSTGRES_PASSWORD=rabbithole
+      - POSTGRES_DB=whiterabbit
 
-#  whiterabbit:
-#    build: .
-#    ports:
-#      - "5000:5000"
-#    volumes:
-#      - .:/code
-#    command: ["--seeds", "/opt/trustar-whiterabbit/data/seed_addresses.csv"]
 
-#  blocksci:
-#    build: ./blocksci
-#    ports:
-#      - "8888:8888"
-#    expose:
-#      - "8888"
+  whiterabbit:
+    build: .
+    ports:
+      - "5009:5009"
+    volumes:
+      - /home/ubuntu/bitcoin:/opt/bitcoin
