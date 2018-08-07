@@ -6,7 +6,7 @@ from json import dumps
 from flask import Response
 
 
-class WhiteRabbit(object):
+class WhiteRabbit:
 
     def __init__(self):
         self.logger = logging.getLogger(__name__)
