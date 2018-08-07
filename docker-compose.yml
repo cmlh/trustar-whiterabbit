@@ -1,9 +1,0 @@
-version: '2'
-services:
-
-  whiterabbit:
-    build: .
-    ports:
-      - "5009:5009"
-    volumes:
-      - /home/ubuntu/bitcoin:/opt/bitcoin
