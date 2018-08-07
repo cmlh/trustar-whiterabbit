@@ -1,6 +1,6 @@
 address,malware,first_seen,source
-135N2nfAkextd6E25quXpM98qLSi2BccCb,cryptolocker,2013-09-05,reddit.com
-1AEoiHY23fbBn8QiJ5y6oAjrhRY1Fb85uc,cryptolocker,2013-09-05,bleepingcomputer.com
+#135N2nfAkextd6E25quXpM98qLSi2BccCb,cryptolocker,2013-09-05,reddit.com
+#1AEoiHY23fbBn8QiJ5y6oAjrhRY1Fb85uc,cryptolocker,2013-09-05,bleepingcomputer.com
 18iEz617DoDp8CNQUyyrjCcC7XCGDf5SVb,cryptolocker,2013-09-05,reddit.com
 1KP72fBmh3XBRfuJDMn53APaqM6iMRspCh,cryptolocker,2013-09-05,reddit.com
 19DyWHtgLgDKgEeoKjfpCJJ9WU8SQ3gr27,cryptodefense,2014-02-20,symantec.com
@@ -21,7 +21,7 @@ address,malware,first_seen,source
 16N3jvnF7UhRh74TMmtwxpLX6zPQKPbEbh,cryptowall,2013-11-01,phishme.com
 1ApF4XayPo7Mtpe326o3xMnSgrkZo7TCWD,cryptowall,2013-11-01,phishme.com
 1MrKJhiECV3RufrY1dSybSXRCwSw11Co6i,dma locker,2015-12-21,youtube.com/user/MrRemoveVirus
-1C8yA7wJuKD4D2giTEpUNcdd7UNExEJ45r,dma locker,2015-12-21,dfwci.com
+#1C8yA7wJuKD4D2giTEpUNcdd7UNExEJ45r,dma locker,2015-12-21,dfwci.com
 166vHLnGB1pCQGxdBkRiMkHW5WGQDbsw6s,dma locker,2015-12-21,malwarebytes.com
 1BA48s9Eeh77vwWiEgh5Vt29G3YJN1PRoR,dma locker,2015-12-21,bleepingcomputer.com
 18mfoGHSfe9h145e8djHK5rChDTnGfPDU9,dma locker,2015-12-21,zaufanatrzeciastrona.pl

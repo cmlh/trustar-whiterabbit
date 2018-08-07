@@ -11,44 +11,44 @@
 <div role="navigation" class="navbar navbar-default navbar-static-top">
     <div class="container">
         <div class="row">
-            <div class="col-sm-6 col-md-6">
-                <ul class="nav navbar-nav">
-                    <li>
-                        <form role="search" class="navbar-form" id="search">
-                            <div class="form-group">
-                                <input type="text" value="Locky" placeholder="Search Malware Family" class="form-control" name="search">
-                            </div>
-                            <button class="btn btn-default" type="submit">Search</button>
-                        </form>
-                    </li>
-                </ul>
-            </div>
-            <div class="navbar-header col-sm-6 col-md-6">
+            <div class="navbar-header">
                 <div class="navbar-brand">
-                    <div class="brand">WhiteRabbit</div>
+                    <div class="brand">WhiteRabbit: Follow Ransomware Campaigns through the Bitcoin Rabbithole</div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="row">
-    <div class="col-md-5">
+<div class="row" style="margin-left: 100px; margin-right: 100px;">
+    <div class="col-md-4 col-sm-4">
         <div class="panel panel-default">
-            <div class="panel-heading">Malware Families</div>
+            <div class="panel-heading">Ransomware Campaigns</div>
+            <table id="results" class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th>Malware Family</th>
+                    <th>First Seen</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-md-8 col-sm-8">
+        <div class="panel panel-default">
+            <div class="panel-heading" id="balances-header">Trends</div>
             <div class="row">
-                <div class="col-md-12 col-sm-12">
-                    <ul id="families">
-                    </ul>
+                <div class="col-md-12 col-sm-12" style="display:inline; height:600px">
+                    <div id="balances"></div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="col-md-7">
         <div class="panel panel-default">
-            <div class="panel-heading" id="malware"></div>
+            <div class="panel-heading" id="graph-header">Explore</div>
             <div class="row">
-                <div class="col-md-12 col-sm-12" style="display:inline; height:800px">
+                <div class="col-md-12 col-sm-12" style="display:inline; height:500px">
                     <div id="graph"></div>
                 </div>
             </div>
@@ -61,10 +61,15 @@
   stroke-opacity: 0.6;
 }
 
-
 .nodes circle:hover {
   fill: #000;
 }
+
+.line {
+  fill: none;
+  stroke-width: 2px;
+}
+
 
 </style>
 
@@ -72,41 +77,40 @@
 <script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
 
 <script type="text/javascript">
-    var graphDiv = document.getElementById("graph");
-    var svg = d3.select("div #graph").append("svg");
-    var query=$("#search").find("input[name=search]").val();
 
-    function render() {
+    var color = d3.scaleOrdinal(d3.schemeCategory20);
 
-        $("svg").empty();
-        var width = 800;
-        var height = 600;
-        svg
-            .attr("width", width)
-            .attr("height", height)
+    function renderGraph(family) {
+
+        var graphWidth = 700;
+        var graphHeight = 500;
+        $("#graph-svg").remove();
+        var graphSvg = d3.select("div #graph").append("svg");
+        graphSvg
+            .attr("id","graph-svg")
+            .attr("width", graphWidth)
+            .attr("height", graphHeight)
             .attr("fill", "#000");
-
-        var color = d3.scaleOrdinal(d3.schemeCategory20);
 
         var simulation = d3.forceSimulation()
             .force("link", d3.forceLink().id(function(d) { return d.id; }))
             .force("collide",d3.forceCollide( function(d){return d.r + 8 }).iterations(16) )
             .force("charge", d3.forceManyBody())
-            .force("center", d3.forceCenter(width / 2, height / 2))
+            .force("center", d3.forceCenter(graphWidth / 2, graphHeight / 2))
             .force("y", d3.forceY(0))
             .force("x", d3.forceX(0));
 
-        d3.json(`/graph/${query}`, function(error, graph) {
+        d3.json(`/graph/${family}`, function(error, graph) {
             if (error) throw error;
 
-            var link = svg.append("g")
+            var link = graphSvg.append("g")
             .attr("class", "links")
             .selectAll("line")
             .data(graph.links)
             .enter().append("line")
             .attr("stroke-width", function(d) { return Math.sqrt(d.value); });
 
-        var node = svg.append("g")
+        var node = graphSvg.append("g")
             .attr("class", "nodes")
             .selectAll("circle")
             .data(graph.nodes)
@@ -160,53 +164,161 @@
             d.fx = null;
             d.fy = null;
         }
+    }
 
+    var margin = {top: 20, right: 20, bottom: 50, left: 70};
+    var width = 700 - margin.left - margin.right;
+    var height = 300 - margin.top - margin.bottom;
+    var parseDate = d3.timeFormat("%Y-%m-%d %H:%M:%S");
+    var x = d3.scaleLinear().range([0, width]);
+    var y = d3.scaleLinear().range([height, 0]);
+
+    function renderBalances(family) {
+
+        $("#usd-svg").remove();
+        $("#btc-svg").remove();
+        var usdSvg = d3.select("div #balances").append("svg")
+            .attr("id","usd-svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        var btcSvg = d3.select("div #balances").append("svg")
+            .attr("id","btc-svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        var usdLine = d3.line()
+            .x(function(d) { return x(d.date); })
+            .y(function(d) { return y(d.usd); });
+
+        var btcLine = d3.line()
+            .x(function(d) { return x(d.height); })
+            .y(function(d) { return y(d.balance); });
+
+        var parseDate = d3.timeParse("%Y-%m-%d %H:%M:%S");
+        d3.json(`/balances/${family}`, function(error, data) {
+            if (error) throw error;
+            data.forEach(function(d1) {
+                d1.forEach(function(d2) {
+                    d2.height = +d2.height;
+                    d2.usd = +d2.usd;
+                    d2.balance = +d2.balance / 1e8;
+                    d2.date = parseDate(d2.date)
+                });
+            });
+
+            var usd_array = [].concat.apply([],data.map(d => d.map(d2 => d2.usd)))
+            usdy = y.domain([Math.min(...usd_array),Math.max(...usd_array)]);
+
+            if (data.length > 0) {
+                datex = x.domain(d3.extent(data[0], function(d) { return d.date; }));
+            } else {
+                datex = d3.scaleTime().range([0, width])
+            }
+
+
+            data.forEach(function(d, i) {
+                usdSvg.append("path")
+                .style("fill", "none")
+                .attr("id", "balances"+i)
+                .style("stroke", function(d) { return color(i); })
+                .attr("class", "line")
+                .attr("d", usdLine(d));
+            });
+
+            usdSvg.append("g")
+               .attr("transform", "translate(0," + height + ")")
+               .call(d3.axisBottom(datex).tickFormat(d3.timeFormat("%b %Y")));
+
+            usdSvg.append("text")
+            .attr("transform","translate(" + (width/2) + " ," + (height + margin.top + 20) + ")")
+            .style("text-anchor", "middle")
+            .text("Block Time");
+
+            usdSvg.append("g")
+               .call(d3.axisLeft(usdy));
+
+            usdSvg.append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 0 - margin.left)
+            .attr("x", 0 - (height / 2))
+            .attr("dy", "1em")
+            .style("text-anchor", "middle")
+            .text("Balance (USD)");
+
+            var height_array = [].concat.apply([],data.map(d => d.map(d2 => d2.height)))
+            heightx = x.domain([Math.min(...height_array),Math.max(...height_array)]);
+
+            var btc_array = [].concat.apply([],data.map(d => d.map(d2 => d2.balance)))
+            btcy = y.domain([Math.min(...btc_array),Math.max(...btc_array)]);
+
+            data.forEach(function(d, i) {
+                btcSvg.append("path")
+                .style("fill", "none")
+                .attr("id", "balances"+i)
+                .style("stroke", function(d) { return color(i); })
+                .attr("class", "line")
+                .attr("d", btcLine(d));
+            });
+
+            btcSvg.append("g")
+               .attr("transform", "translate(0," + height + ")")
+               .call(d3.axisBottom(heightx));
+
+            btcSvg.append("text")
+            .attr("transform","translate(" + (width/2) + " ," + (height + margin.top + 20) + ")")
+            .style("text-anchor", "middle")
+            .text("Block Height");
+
+            btcSvg.append("g")
+               .call(d3.axisLeft(btcy));
+
+            btcSvg.append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 0 - margin.left)
+            .attr("x", 0 - (height / 2))
+            .attr("dy", "1em")
+            .style("text-anchor", "middle")
+            .text("Balance (BTC)");
+
+       })
     }
 </script>
 
 <script type="text/javascript">
     $(function () {
+        function capitalize(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1)
+        }
         function showMalware(family) {
             $.get("/malware/" + encodeURIComponent(family),
                     function (data) {
                         if (!data) return;
-                        $("#malware").text("Explore " + data.family);
+                        $("#graph-header").text("Explore " + capitalize(data.family) + " Clusters");
+                        $("#balances-header").text("Historical Balance of  " + capitalize(data.family) + " Clusters");
                         var $list = $("#seeds").empty();
                         data.seeds.forEach(function (seed) {
-                            $list.append($("<li>" + seed.address + "</li>"));
+                            $list.append($("<li>" + seed.address + " (Source: " + seed.source + ")" + "</li>"));
                         });
                     }, "json");
             return false;
         }
-        function search() {
-            var query=$("#search").find("input[name=search]").val();
-            $.get("/search?q=" + encodeURIComponent(query),
-                    function (data) {
-                        var t = $("table#results tbody").empty();
-                        if (!data || data.length == 0) return;
-                        data.forEach(function (results) {
-                            $("<tr><td class='malware'>" + results.family + "</td></tr>").appendTo(t)
-                                    .click(function() { showMalware($(this).find("td.malware").text());})
-                        });
-                        showMalware(data[0].family);
-                    }, "json");
-            return false;
-        }
-        $("#search").submit(search);
-        search();
-        render();
-    })
-</script>
-
-<script type="text/javascript">
-    $(function () {
         function showMalwareFamilies(family) {
             $.get("/malware",
                     function (data) {
-                        if (!data) return;
-                        var $list = $("#families").empty();
+                        var t = $("table#results tbody").empty();
+                        if (!data || data.length == 0) return;
                         data.malwareFamilies.forEach(function (malware) {
-                            $list.append($("<li>" + malware.family + "</li>"));
+                            $("<tr><td class='malware'>" + malware.family + "</td><td class='first_seen'>" + malware.first_seen + "</td></tr>").appendTo(t)
+                            .click(function() {
+                                showMalware($(this).find("td.malware").text());
+                                renderGraph($(this).find("td.malware").text());
+                                renderBalances($(this).find("td.malware").text());
+                            })
                         });
                     }, "json");
             return false;

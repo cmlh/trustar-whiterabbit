@@ -1,4 +1,4 @@
-version: '3'
+version: '2'
 services:
 
   neo4j:
@@ -12,7 +12,7 @@ services:
       - "7473"
       - "7687"
     volumes:
-#      - ./data:/data
+      - ./data:/data
       - ./import:/import
     environment:
       - NEO4J_AUTH=neo4j/rabbithole
@@ -21,17 +21,9 @@ services:
 #      - NEO4J_dbms_memory_heap_initial__size=4G
 #      - NEO4J_dbms_memory_heap_max__size=4G
 
-#  whiterabbit:
-#    build: .
-#    ports:
-#      - "5000:5000"
-#    volumes:
-#      - .:/code
-#    command: ["--seeds", "/opt/trustar-whiterabbit/data/seed_addresses.csv"]
-
-#  blocksci:
-#    build: ./blocksci
-#    ports:
-#      - "8888:8888"
-#    expose:
-#      - "8888"
+  whiterabbit:
+    build: .
+    ports:
+      - "5009:5009"
+    volumes:
+      - /home/ubuntu/bitcoin:/opt/bitcoin

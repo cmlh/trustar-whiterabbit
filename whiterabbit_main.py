@@ -1,7 +1,5 @@
-#!/usr/bin/env python
 import logging
-import argparse
-from flask import Flask, request
+from flask import Flask
 from whiterabbit import WhiteRabbit
 
 app = Flask(__name__, static_url_path='/static/')
@@ -16,50 +14,27 @@ def get_index():
 
 @app.route("/malware/<family>")
 def get_malware_family(family):
-    return whiterabbit.get_malware_family(family)
+    return whiterabbitTool.get_malware_family(family)
 
 
 @app.route("/malware")
 def get_malware_families():
-    return whiterabbit.get_malware_families()
+    return whiterabbitTool.get_malware_families()
 
 
 @app.route("/graph/<family>")
 def get_graph(family):
-    return whiterabbit.get_graph(family)
+    return whiterabbitTool.get_graph(family)
 
 
-@app.route("/search")
-def get_search():
-    try:
-        q = request.args["q"]
-        if q:
-            return whiterabbit.get_search(q)
-    except KeyError:
-        return []
+@app.route("/balances/<family>")
+def get_balances(family):
+    return whiterabbitTool.get_balances(family)
 
 
-def parse_cmd_line_args():
-    """
-    Process the command line arguments given while starting the script
-    """
-    parser = argparse.ArgumentParser("WhiteRabbit")
-    parser.add_argument("-s",
-                        "--seeds",
-                        help="Path to BTC seed ransomware addresses CSV",
-                        required=False)
-    args = parser.parse_args()
-    return args
-
-
-def signal_handler(signum, frame):
-    """ Handles Signals
-    :param signum: Signal Number
-    :param frame: frame
-    :return:
-    """
-    logger.info("Received signal {}".format(signum))
-    # whiterabbit.stop()
+@app.route("/import")
+def import_ransomware_seeds():
+    return whiterabbitTool.import_ransomware_seeds()
 
 
 if __name__ == '__main__':
@@ -69,14 +44,7 @@ if __name__ == '__main__':
     """
     logger.info("-------------< WhiteRabbit Application >-------------")
 
-    # Get command line arguments
-    args = parse_cmd_line_args()
-    seeds = args.seeds
-    if seeds:
-        logger.info("Seeds found: %s", seeds)
-
-    # Start TruStash
-    whiterabbit = WhiteRabbit(seeds)
-    whiterabbit.start()
-
-    app.run(debug=True, port=8080)
+    # Start WhiteRabbit
+    whiterabbitTool = WhiteRabbit()
+    app.run(host='0.0.0.0', debug=True, port=5009)
+    # app.run(host='localhost', debug=True, port=5009)
