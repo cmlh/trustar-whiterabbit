@@ -45,14 +45,6 @@
                 </div>
             </div>
         </div>
-        <div class="panel panel-default">
-            <div class="panel-heading" id="graph-header">Explore</div>
-            <div class="row">
-                <div class="col-md-12 col-sm-12" style="display:inline; height:500px">
-                    <div id="graph"></div>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 <style>
@@ -79,92 +71,6 @@
 <script type="text/javascript">
 
     var color = d3.scaleOrdinal(d3.schemeCategory20);
-
-    function renderGraph(family) {
-
-        var graphWidth = 700;
-        var graphHeight = 500;
-        $("#graph-svg").remove();
-        var graphSvg = d3.select("div #graph").append("svg");
-        graphSvg
-            .attr("id","graph-svg")
-            .attr("width", graphWidth)
-            .attr("height", graphHeight)
-            .attr("fill", "#000");
-
-        var simulation = d3.forceSimulation()
-            .force("link", d3.forceLink().id(function(d) { return d.id; }))
-            .force("collide",d3.forceCollide( function(d){return d.r + 8 }).iterations(16) )
-            .force("charge", d3.forceManyBody())
-            .force("center", d3.forceCenter(graphWidth / 2, graphHeight / 2))
-            .force("y", d3.forceY(0))
-            .force("x", d3.forceX(0));
-
-        d3.json(`/graph/${family}`, function(error, graph) {
-            if (error) throw error;
-
-            var link = graphSvg.append("g")
-            .attr("class", "links")
-            .selectAll("line")
-            .data(graph.links)
-            .enter().append("line")
-            .attr("stroke-width", function(d) { return Math.sqrt(d.value); });
-
-        var node = graphSvg.append("g")
-            .attr("class", "nodes")
-            .selectAll("circle")
-            .data(graph.nodes)
-            .enter()
-            .append("circle")
-            .attr("r", 5)
-            .attr("fill", function(d) { return color(d.group); })
-            .call(d3.drag()
-                .on("start", dragstarted)
-                .on("drag", dragged)
-                .on("end", dragended));
-
-        node
-            .append("text")
-            .attr("dy", ".35em")
-            .text(function(d) { return d.id; });
-
-        simulation
-            .nodes(graph.nodes)
-            .on("tick", ticked);
-
-        simulation.force("link")
-            .links(graph.links);
-
-        function ticked() {
-            link
-                .attr("x1", function(d) { return d.source.x; })
-                .attr("y1", function(d) { return d.source.y; })
-                .attr("x2", function(d) { return d.target.x; })
-                .attr("y2", function(d) { return d.target.y; });
-
-            node
-                .attr("cx", function(d) { return d.x; })
-                .attr("cy", function(d) { return d.y; });
-            }
-        });
-
-        function dragstarted(d) {
-            if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-            d.fx = d.x;
-            d.fy = d.y;
-        }
-
-        function dragged(d) {
-            d.fx = d3.event.x;
-            d.fy = d3.event.y;
-        }
-
-        function dragended(d) {
-            if (!d3.event.active) simulation.alphaTarget(0);
-            d.fx = null;
-            d.fy = null;
-        }
-    }
 
     var margin = {top: 20, right: 20, bottom: 50, left: 70};
     var width = 700 - margin.left - margin.right;
@@ -215,7 +121,8 @@
             usdy = y.domain([Math.min(...usd_array),Math.max(...usd_array)]);
 
             if (data.length > 0) {
-                datex = x.domain(d3.extent(data[0], function(d) { return d.date; }));
+                var date_array = [].concat.apply([],data.map(d => d.map(d2 => d2.date)))
+                datex = x.domain(d3.extent(date_array, function(d) { return d; }));
             } else {
                 datex = d3.scaleTime().range([0, width])
             }
@@ -294,29 +201,14 @@
         function capitalize(str) {
             return str.charAt(0).toUpperCase() + str.slice(1)
         }
-        function showMalware(family) {
-            $.get("/malware/" + encodeURIComponent(family),
-                    function (data) {
-                        if (!data) return;
-                        $("#graph-header").text("Explore " + capitalize(data.family) + " Clusters");
-                        $("#balances-header").text("Historical Balance of  " + capitalize(data.family) + " Clusters");
-                        var $list = $("#seeds").empty();
-                        data.seeds.forEach(function (seed) {
-                            $list.append($("<li>" + seed.address + " (Source: " + seed.source + ")" + "</li>"));
-                        });
-                    }, "json");
-            return false;
-        }
         function showMalwareFamilies(family) {
             $.get("/malware",
                     function (data) {
                         var t = $("table#results tbody").empty();
                         if (!data || data.length == 0) return;
-                        data.malwareFamilies.forEach(function (malware) {
+                        data.forEach(function (malware) {
                             $("<tr><td class='malware'>" + malware.family + "</td><td class='first_seen'>" + malware.first_seen + "</td></tr>").appendTo(t)
                             .click(function() {
-                                showMalware($(this).find("td.malware").text());
-                                renderGraph($(this).find("td.malware").text());
                                 renderBalances($(this).find("td.malware").text());
                             })
                         });

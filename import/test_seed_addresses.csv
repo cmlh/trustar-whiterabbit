@@ -1,7 +1,6 @@
 address,malware,first_seen,source
 18iEz617DoDp8CNQUyyrjCcC7XCGDf5SVb,cryptolocker,2013-09-05,reddit.com
 1KP72fBmh3XBRfuJDMn53APaqM6iMRspCh,cryptolocker,2013-09-05,reddit.com
-13dN96pRTQDhpWRqKyLTbgRxeTN52p2CqY,mischa,2016-03-01,twitter.com/GrujaRS
 1BAdEKq6zE1JDL8g2pA1MDRHbW1wvYCWhT,goldeneye,2016-03-01,bleepingcomputer.com
 1MGnopAa6MAGjUpCEmRiSAcVKZNB6n8gnR,goldeneye,2016-03-01,youtube.com/channel/UCUxwifpHNf0YAgRvC-2dPQA
 17xV74Hp2zNR74yG3AJvPpNMchPJHm2iUo,goldeneye,2016-03-01,digitalxraidc.com
@@ -15,5 +14,3 @@ address,malware,first_seen,source
 13AM4VW2dhxYgXeQepoHkHSQuy6NgaEb94,wannacry,2017-05-12,securelist.com
 12t9YDPgwueZ9NyMgw519p7AA8isjr6SMw,wannacry,2017-05-12,securelist.com
 115p7UMMngoj1pMvkpHijcRdfJNXj6LrLn,wannacry,2017-05-12,securelist.com
-1GxXGMoz7HAVwRDZd7ezkKipY4DHLUqzmM,bad rabbit,2017-10-24,group-ib.com
-17GhezAiRhgB8DGArZXBkrZBFTGCC9SQ2Z,bad rabbit,2017-10-24,group-ib.com

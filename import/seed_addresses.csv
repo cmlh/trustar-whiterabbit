@@ -28,7 +28,6 @@ address,malware,first_seen,source
 16hHkyuzCDRFzoejVuqajqrnbmKHSmEfQM,dma locker,2015-12-21,youtube.com/channel/UCpulebZ-YA0rpa_s07IEFKw
 1382JAg5xbQv7QNwq1svDeyw6ELtNCmujG,dma locker,2015-12-21,malwarebytes.com
 1KXw7aJR4THWAxtnxZYzmysdLXVhLfa97n,dma locker,2015-12-21,malwarebytes.com
-13dN96pRTQDhpWRqKyLTbgRxeTN52p2CqY,mischa,2016-03-01,twitter.com/GrujaRS
 1BAdEKq6zE1JDL8g2pA1MDRHbW1wvYCWhT,goldeneye,2016-03-01,bleepingcomputer.com
 1MGnopAa6MAGjUpCEmRiSAcVKZNB6n8gnR,goldeneye,2016-03-01,youtube.com/channel/UCUxwifpHNf0YAgRvC-2dPQA
 17xV74Hp2zNR74yG3AJvPpNMchPJHm2iUo,goldeneye,2016-03-01,digitalxraidc.com
@@ -55,17 +54,11 @@ address,malware,first_seen,source
 1A6GJMhpPhCcM557o62scEtuVXNAFe74fa,ctb-locker,2014-07-01,sucuri.net
 1BGDTqDZyD446Q71eGhdmWLzyCHVPZUJxv,ctb-locker,2014-07-01,sucuri.net
 1KpP1YGGxPHKTLgET82JBngcsBuifp3noW,cryptotorlocker2015,2015-02-05,symantec.com
-1NRn15kJnVRrptTSQJJnMD9KJcWkVFh1Gv,teslacrypt,2015-02-01,secureworks.com
-15Y2TmHrxjmRFxfNUttwb9aU4DifvDpWKM,teslacrypt,2015-02-01,theregister.co.uk
-1JthvnK8aoieXpx8YCAEtQwhfZSjSkdNox,teslacrypt,2015-02-01,news.sophos.com
-1L2jriaKw39jZysdH7nhe6eMSLSPNHvvHx,teslacrypt,2015-02-01,pcprofessionale.it
-1GQf1kEFK3SmVw8AMjRcn7jX1mvrGSDTkK,teslacrypt,2015-02-01,twitter.com/GrujaRS
 1HqoNfpAJFMy9E36DBSk1ktPQ9o9fn2RxX,chimera,2015-11-01,malwarebytes.com
 15QzHEbNZWp2w1i2mfZSx7pV5YNM4ahszB,chimera,2015-11-01,reaqta.com
 1GaVKrVT17DN4dnWbTqGB9qG3rQrk1JBe9,chimera,2015-11-01,pcrisk.com
 1MZsTFUNMGxQxz38wWm8CtBoycW7VD5z7v,chimera,2015-11-01,twitter.com/siri_urz
 1DGqEKZJdCd4YftWPuK5Z1HFBdeyz9RNDU,chimera,2015-11-01,under-linx.org
-1AoNMLZfhw7cbMCKAhaKHiveMdwFyVUGeA,hi buddy!,2016-01-01,spywaretechs.com
 15fbyNgDnqYQR5vSHJ8PTAEJbKy4dwNBCZ,jigsaw,2016-03-14,bleepingcomputer.com
 12YHmaLEAbWx3o3p6BvegG9WH47EYs8t1V,jigsaw,2016-03-14,bleepingcomputer.com
 15MHczWfcYxf3P3NwYqCthaNiieGP8RY9d,jigsaw,2016-03-14,arstechnica.com
@@ -85,18 +78,6 @@ address,malware,first_seen,source
 18jCCAR2QZf6uZTnu4769ZknPfXjbmh1mw,jigsaw,2016-03-14,pcrisk.com
 1EH3yoQciVcWUufa4NWJvftyvvFxjbFLtQ,jigsaw,2016-03-14,pcrisk.com
 1F5RJzWN1g38wD9XbcspcxaYDU5hKpdvm8,jigsaw,2016-03-14,pcrisk.com
-17XajwHHeWbfKfNwn57sHRMAEXxvQUUGNd,zcryptor,2016-05-24,blogs.technet.microsoft.com
 16jvWspVfvhjRgJhGCDETf29cjQAyNmx9G,venuslocker,2016-08-01,twitter.com/GrujaRS
 1JKVwmeokitMHAFxCUeC4yrd8pdWxDAjZW,venuslocker,2016-08-01,youtube.com/channel/UCbjRDDLzQ6jLYBrU0BPGbrA
 1Dj9YnMiciNgaKuyzKynygu7nB21tvV6QD,venuslocker,2016-08-01,briteccomputers.co.uk
-1N82pq3XovKoJYqUmTrRiXftpNHZyu4jyv,the trump locker,2016-08-01,bleepingcomputer.com
-19fhNi9L2aYXTaTFWueRhJYGsGDaN6WGcP,the lltp locker,2016-08-01,it-help.info
-1Q94RXqr5WzyNh9Jn3YLDGeBoJhxJBigcF,killdisk,2015-01-01,welivesecurity.com
-1EZrvz1kL7SqfemkH3P1VMtomYZbfhznkb,findzip,2017-02-22,welivesecurity.com
-18yfx86BwNK5xYKw71uaHwAxPgCGRJaqgg,thundercrypt,2017-05-01,it-help.info
-1HFY12o56xbHer3oeNxC99A7SGyXaR64hs,thundercrypt,2017-05-01,pcrisk.com
-18KfMJBTDWUUa1h4tm58swbkvsgHNZ6d2g,thundercrypt,2017-05-01,channel8news.sg
-1CvcvetHZ81V8itkDtF8iRpLfPp7Zz8UER,doublelocker,2017-10-13,welivesecurity.com
-1HxKouDDK9WbkizMEnf23tftHSefWhUyXR,doublelocker,2017-10-13,symantec.com
-1GxXGMoz7HAVwRDZd7ezkKipY4DHLUqzmM,bad rabbit,2017-10-24,group-ib.com
-17GhezAiRhgB8DGArZXBkrZBFTGCC9SQ2Z,bad rabbit,2017-10-24,group-ib.com

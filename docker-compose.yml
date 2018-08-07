@@ -1,26 +1,6 @@
 version: '2'
 services:
 
-  neo4j:
-    image: neo4j:3.0
-    ports:
-      - "7474:7474"
-      - "7473:7473"
-      - "7687:7687"
-    expose:
-      - "7474"
-      - "7473"
-      - "7687"
-    volumes:
-      - ./data:/data
-      - ./import:/import
-    environment:
-      - NEO4J_AUTH=neo4j/rabbithole
-      - NEO4J_dbms_directories_import=
-#      - NEO4J_dbms_allowFormatMigration=true
-#      - NEO4J_dbms_memory_heap_initial__size=4G
-#      - NEO4J_dbms_memory_heap_max__size=4G
-
   whiterabbit:
     build: .
     ports:
