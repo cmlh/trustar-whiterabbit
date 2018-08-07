@@ -3,6 +3,7 @@ from flask import Flask
 from whiterabbit import WhiteRabbit
 
 app = Flask(__name__, static_url_path='/static/')
+whiterabbitTool = WhiteRabbit()
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG, format='%(message)s')
 
@@ -30,5 +31,4 @@ if __name__ == '__main__':
     logger.info("-------------< WhiteRabbit Application >-------------")
 
     # Start WhiteRabbit
-    whiterabbitTool = WhiteRabbit()
     app.run(host='0.0.0.0', debug=True, port=5009)
