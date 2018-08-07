@@ -3,7 +3,7 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="http://neo4j-contrib.github.io/developer-resources/language-guides/assets/css/main.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <title>WhiteRabbit</title>
 </head>
 
@@ -13,14 +13,14 @@
         <div class="row">
             <div class="navbar-header">
                 <div class="navbar-brand">
-                    <div class="brand">WhiteRabbit: Follow Ransomware Campaigns through the Bitcoin Rabbithole</div>
+                    <div class="brand">WhiteRabbit: Follow the Bitcoin Rabbithole</div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="row" style="margin-left: 100px; margin-right: 100px;">
+<div class="row" style="margin-left: 50px; margin-right: 50px;">
     <div class="col-md-4 col-sm-4">
         <div class="panel panel-default">
             <div class="panel-heading">Ransomware Campaigns</div>
@@ -38,7 +38,7 @@
     </div>
     <div class="col-md-8 col-sm-8">
         <div class="panel panel-default">
-            <div class="panel-heading" id="balances-header">Trends</div>
+            <div class="panel-heading" id="balances-header">Historical Balances</div>
             <div class="row">
                 <div class="col-md-12 col-sm-12" style="display:inline; height:600px">
                     <div id="balances"></div>
@@ -62,7 +62,19 @@
   stroke-width: 2px;
 }
 
+.malware, .first_seen {
+  letter-spacing: 1px;
+  font-size: 12px;
+}
 
+.navbar-default {
+  background-color: #3568D5;
+  border-color:#3568D5;
+}
+.navbar-default .navbar-brand {
+  color: #F7F7F7;
+  letter-spacing: 1px;
+}
 </style>
 
 <script src="https://d3js.org/d3.v4.min.js"></script>
@@ -72,7 +84,7 @@
 
     var color = d3.scaleOrdinal(d3.schemeCategory20);
 
-    var margin = {top: 20, right: 20, bottom: 50, left: 70};
+    var margin = {top: 20, right: 20, bottom: 50, left: 80};
     var width = 700 - margin.left - margin.right;
     var height = 300 - margin.top - margin.bottom;
     var parseDate = d3.timeFormat("%Y-%m-%d %H:%M:%S");
@@ -139,7 +151,7 @@
 
             usdSvg.append("g")
                .attr("transform", "translate(0," + height + ")")
-               .call(d3.axisBottom(datex).tickFormat(d3.timeFormat("%b %Y")));
+               .call(d3.axisBottom(datex).ticks(6).tickFormat(d3.timeFormat("%b %Y")));
 
             usdSvg.append("text")
             .attr("transform","translate(" + (width/2) + " ," + (height + margin.top + 20) + ")")
@@ -151,7 +163,7 @@
 
             usdSvg.append("text")
             .attr("transform", "rotate(-90)")
-            .attr("y", 0 - margin.left)
+            .attr("y", 0 - margin.left + 10)
             .attr("x", 0 - (height / 2))
             .attr("dy", "1em")
             .style("text-anchor", "middle")
@@ -186,7 +198,7 @@
 
             btcSvg.append("text")
             .attr("transform", "rotate(-90)")
-            .attr("y", 0 - margin.left)
+            .attr("y", 0 - margin.left + 10)
             .attr("x", 0 - (height / 2))
             .attr("dy", "1em")
             .style("text-anchor", "middle")
@@ -207,9 +219,11 @@
                         var t = $("table#results tbody").empty();
                         if (!data || data.length == 0) return;
                         data.forEach(function (malware) {
-                            $("<tr><td class='malware'>" + malware.family + "</td><td class='first_seen'>" + malware.first_seen + "</td></tr>").appendTo(t)
+                            $("<tr><td class='malware'>" + malware.family.toUpperCase() + "</td><td class='first_seen'>" + malware.first_seen + "</td></tr>").appendTo(t)
                             .click(function() {
-                                renderBalances($(this).find("td.malware").text());
+                                var malware = $(this).find("td.malware").text().toLowerCase();
+                                $("#balances-header").text("Historical Balance of  " + capitalize(malware.toUpperCase()) + " Clusters");
+                                renderBalances(malware);
                             })
                         });
                     }, "json");
