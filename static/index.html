@@ -175,10 +175,10 @@
 
     function renderBalances(family) {
 
-        $("#balances-svg").remove();
+        $("#usd-svg").remove();
         $("#btc-svg").remove();
-        var balancesSvg = d3.select("div #balances").append("svg")
-            .attr("id","balances-svg")
+        var usdSvg = d3.select("div #balances").append("svg")
+            .attr("id","usd-svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
@@ -191,63 +191,67 @@
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        var balanceLine = d3.line()
-            .x(function(d) { return x(d.height); })
+        var usdLine = d3.line()
+            .x(function(d) { return x(d.date); })
             .y(function(d) { return y(d.usd); });
 
         var btcLine = d3.line()
             .x(function(d) { return x(d.height); })
             .y(function(d) { return y(d.balance); });
 
+        var parseDate = d3.timeParse("%Y-%m-%d %H:%M:%S");
         d3.json(`/balances/${family}`, function(error, data) {
             if (error) throw error;
             data.forEach(function(d1) {
                 d1.forEach(function(d2) {
-                    d2.datetime = +d2.height;
+                    d2.height = +d2.height;
                     d2.usd = +d2.usd;
                     d2.balance = +d2.balance / 1e8;
+                    d2.date = parseDate(d2.date)
                 });
             });
 
-            var height_array = [].concat.apply([],data.map(d => d.map(d2 => d2.height)))
             var usd_array = [].concat.apply([],data.map(d => d.map(d2 => d2.usd)))
-
-            heightx = x.domain([Math.min(...height_array),Math.max(...height_array)]);
             usdy = y.domain([Math.min(...usd_array),Math.max(...usd_array)]);
 
-            var parseDate = d3.timeParse("%Y-%m-%d %H:%M:%S");
-            var first_seen = "2014-02-28 06:24:29"
-            var first_seen_date = parseDate(first_seen)
-            datex = d3.scaleTime().domain([new Date(2015, 0, 1), new Date(2017, 0, 1)]).range([0, width])
+            if (data.length > 0) {
+                datex = x.domain(d3.extent(data[0], function(d) { return d.date; }));
+            } else {
+                datex = d3.scaleTime().range([0, width])
+            }
+
 
             data.forEach(function(d, i) {
-                balancesSvg.append("path")
+                usdSvg.append("path")
                 .style("fill", "none")
                 .attr("id", "balances"+i)
                 .style("stroke", function(d) { return color(i); })
                 .attr("class", "line")
-                .attr("d", balanceLine(d));
+                .attr("d", usdLine(d));
             });
 
-            balancesSvg.append("g")
+            usdSvg.append("g")
                .attr("transform", "translate(0," + height + ")")
-               .call(d3.axisBottom(heightx));
+               .call(d3.axisBottom(datex).tickFormat(d3.timeFormat("%b %Y")));
 
-            balancesSvg.append("text")
+            usdSvg.append("text")
             .attr("transform","translate(" + (width/2) + " ," + (height + margin.top + 20) + ")")
             .style("text-anchor", "middle")
-            .text("Block Height");
+            .text("Block Time");
 
-            balancesSvg.append("g")
+            usdSvg.append("g")
                .call(d3.axisLeft(usdy));
 
-            balancesSvg.append("text")
+            usdSvg.append("text")
             .attr("transform", "rotate(-90)")
             .attr("y", 0 - margin.left)
             .attr("x", 0 - (height / 2))
             .attr("dy", "1em")
             .style("text-anchor", "middle")
             .text("Balance (USD)");
+
+            var height_array = [].concat.apply([],data.map(d => d.map(d2 => d2.height)))
+            heightx = x.domain([Math.min(...height_array),Math.max(...height_array)]);
 
             var btc_array = [].concat.apply([],data.map(d => d.map(d2 => d2.balance)))
             btcy = y.domain([Math.min(...btc_array),Math.max(...btc_array)]);
