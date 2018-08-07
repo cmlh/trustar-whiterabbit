@@ -9,7 +9,6 @@ RUN pip3 install -r requirements.txt
 
 RUN mkdir /opt/bitcoin
 
-#COPY import/seed_addresses.csv .
 #COPY whiterabbit.py .
 #COPY whiterabbit_main.py .
 #ENTRYPOINT ["python3", "whiterabbit_main.py"]
