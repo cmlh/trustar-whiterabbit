@@ -1,17 +1,25 @@
 version: '2'
 services:
 
-  postgres:
-    image: postgres:9.6.3
-    volumes:
-     - ./postgres-data:/var/lib/postgresql/data
+  neo4j:
+    image: neo4j:3.0
     ports:
-      - "5432:5432"
+      - "7474:7474"
+      - "7473:7473"
+      - "7687:7687"
+    expose:
+      - "7474"
+      - "7473"
+      - "7687"
+    volumes:
+      - ./data:/data
+      - ./import:/import
     environment:
-      - POSTGRES_USER=alice
-      - POSTGRES_PASSWORD=rabbithole
-      - POSTGRES_DB=whiterabbit
-
+      - NEO4J_AUTH=neo4j/rabbithole
+      - NEO4J_dbms_directories_import=
+#      - NEO4J_dbms_allowFormatMigration=true
+#      - NEO4J_dbms_memory_heap_initial__size=4G
+#      - NEO4J_dbms_memory_heap_max__size=4G
 
   whiterabbit:
     build: .

@@ -1,6 +1,5 @@
-#!/usr/bin/env python
 import logging
-from flask import Flask, request
+from flask import Flask
 from whiterabbit import WhiteRabbit
 
 app = Flask(__name__, static_url_path='/static/')
@@ -15,28 +14,27 @@ def get_index():
 
 @app.route("/malware/<family>")
 def get_malware_family(family):
-    return whiterabbit.get_malware_family(family)
+    return whiterabbitTool.get_malware_family(family)
 
 
 @app.route("/malware")
 def get_malware_families():
-    return whiterabbit.get_malware_families()
+    return whiterabbitTool.get_malware_families()
 
 
 @app.route("/graph/<family>")
 def get_graph(family):
-    return whiterabbit.get_graph(family)
+    return whiterabbitTool.get_graph(family)
 
 
-@app.route("/search")
-def get_search():
-    query = request.args["q"]
-    if query:
-        logger.debug("Searching for %s", query)
-        return whiterabbit.get_search(query)
-    else:
-        logger.debug("No search term passed")
-        return []
+@app.route("/balances/<family>")
+def get_balances(family):
+    return whiterabbitTool.get_balances(family)
+
+
+@app.route("/import")
+def import_ransomware_seeds():
+    return whiterabbitTool.import_ransomware_seeds()
 
 
 if __name__ == '__main__':
@@ -47,6 +45,6 @@ if __name__ == '__main__':
     logger.info("-------------< WhiteRabbit Application >-------------")
 
     # Start WhiteRabbit
-    whiterabbit = WhiteRabbit()
-
-    app.run(debug=True, port=5009)
+    whiterabbitTool = WhiteRabbit()
+    app.run(host='0.0.0.0', debug=True, port=5009)
+    # app.run(host='localhost', debug=True, port=5009)

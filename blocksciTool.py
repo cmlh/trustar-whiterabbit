@@ -9,7 +9,6 @@ logging.basicConfig(level=logging.DEBUG, format='%(message)s')
 class BlockSciTool:
 
     CHAIN_PATH = "/home/ubuntu/bitcoin"
-    LATEST_BLOCK = 532379
     # Every 5-15 minutes, a new block is mined.
     AVG_BLOCKS_PER_HOUR = 6
     AVG_BLOCKS_PER_DAY = AVG_BLOCKS_PER_HOUR * 24
@@ -20,58 +19,83 @@ class BlockSciTool:
     def __init__(self):
         self.chain = blocksci.Blockchain(self.CHAIN_PATH)
 
-    def cluster_by_change_legacy(self, seed):
-        """
-        Use the BlockSci Change Legacy Heuristic and Multi-Input Heuristic
-        (https://citp.github.io/BlockSci/reference/heuristics/change.html#blocksci.heuristics.change.legacy)
-        to cluster addresses that have been
-        :param seed: seed address
-        """
-        heuristic = blocksci.heuristics.change.legacy()
-        self.cluster_with_heuristic(seed, heuristic, self.CHAIN_PATH + "/clusters/change_legacy")
-
-    def cluster_by_no_change(self, seed):
-        """
-        Use the BlockSci Multi-Input Heuristic
-        :param seed: seed address
-        """
-        logger.info("Clustering address %s by no change heuristic", seed)
+    def cluster_by_cospend(self):
+        """Use the BlockSci Multi-Input "Co-Spend" Heuristic"""
+        logger.info("Clustering addresses by co-spend heuristic")
         heuristic = blocksci.heuristics.change.legacy() - blocksci.heuristics.change.legacy()
-        self.cluster_with_heuristic(seed, heuristic, self.CHAIN_PATH + "/clusters/no_change")
+        cluster = blocksci.cluster.ClusterManager.create_clustering(location=self.CHAIN_PATH + "/clusters/cospend",
+                                                                    chain=self.chain,
+                                                                    heuristic=heuristic,
+                                                                    should_overwrite=True)
+        return cluster
 
-    def cluster_with_heuristic(self, seed, heuristic, filepath):
-        """
-        Perform clustering for the given address using the given heuristic and store the output
-        using the .dat extension at the filepath given.
-        :param seed: seed address string to build cluster for
-        :param heuristic: BlockSci heuristic to build cluster with
-        :param filepath: location to store the output .dat file
-        """
-        address = self.chain.address_from_string(seed)
-        cluster = blocksci.cluster.ClusterManager.create_clustering(filepath, self.chain, heuristic, True)
+    def cluster_by_address(self, cluster, address):
+        """Perform clustering for the given address using the given heuristic and store
+         the output using the .dat extension at the filepath given.
+         """
+        cluster_with_address = None
+        btc_address = self.chain.address_from_string(address)
+        if btc_address:
+            cluster_with_address = cluster.cluster_with_address(address=btc_address)
+        return cluster_with_address
 
-        cluster_with_address = cluster.cluster_with_address(address)
+    def get_cluster_addresses(self, cluster):
+        """Return a list of addresses in the cluster with their current balance, type
+        (e.g. public key, multi-signature address), first transaction datetime and
+        block height."""
+        cluster_addresses = []
+        for address in cluster.addresses:
+            try:
+                addr_first_tx = address.first_tx
+                addr_first_tx_time = addr_first_tx.block_time
+                addr_first_tx_height = addr_first_tx.block_height
+                addr_string = address.address_string
+                cluster_addresses.append(({"address": addr_string,
+                                           "first_tx_time": addr_first_tx_time,
+                                           "first_tx_height": addr_first_tx_height}))
+            except Exception as e:
+                logger.error("Could not append address. Skipping.")
+                logger.error(e)
+        return cluster_addresses
 
-        # Can be expensive to compute when the cluster is large
-        n_addresses = cluster_with_address.cluster_num
-        logger.debug("Found %d addresses", n_addresses)
+    def get_cluster_balances(self, cluster=None, start=None):
+        payments = cluster.txes()
+        df_payments = self.get_payments_df(payments)
+        heights = df_payments.sort_values(by="height")["height"].values
+        balances = self.get_balances_via_heights_list(cluster=cluster, heights=heights)
+        df = pd.DataFrame(balances, columns=["height", "balance"])
+        df = self.get_dollars_df(df, "balance")
+        return df
 
-        balances = []
-        addresses = []
-        for address in cluster_with_address.addresses:
-            # Divide by Satoshis
-            the_balance = address.balance(self.LATEST_BLOCK) / 1e8
-            if the_balance > 0.0:
-                balances.append(the_balance)
-                addresses.append(address)
-                logger.debug("Address %s has %d BTC", address, the_balance)
+    def get_balances_via_heights_list(self, cluster=None, heights=None):
+        return [(int(height), cluster.balance(int(height))) for height in heights]
 
-    def get_cluster_balances(self, cluster, time_range):
-        starting_block = self.LATEST_BLOCK - 4 * self.AVG_BLOCKS_PER_MONTH
-        if time_range is None:
-            time_range = range(starting_block, self.LATEST_BLOCK)
+    def get_payments_df(self, txes):
+        payments = [(tx.block_height, tx.input_value) for tx in txes]
+        df = pd.DataFrame(payments, columns=["height", "payment"])
+        return self.get_dollars_df(df, "payment")
 
-        time_balances = [(i, cluster.balance(i) / 1e8) for i in time_range]
-        df = pd.DataFrame(time_balances, columns=["height", "balance"])
+    def get_dollars_df(self, df=None, column_name=None):
         df.index = df["height"]
-        return time_balances
+        converter = blocksci.CurrencyConverter()
+        df = self.chain.heights_to_dates(df)
+        df["usd"] = df.apply(lambda x: converter.satoshi_to_currency(x[column_name], self.chain[x["height"]].time), axis=1)
+        df.index.name = "datetime"
+        return df
+
+    def get_lifetime(self, address):
+        address_value = address.address_string
+        first_block_time = address.first_tx.block_time
+        first_block_height = address.first_tx.block_height
+        last_time_block = address.in_txes()[-1].block_time
+        last_block_height = address.in_txes()[-1].block_height
+        life_time = address.in_txes()[-1].block_time - address.first_tx.block_time
+        return (address_value,
+                first_block_time,
+                first_block_height,
+                last_time_block,
+                last_block_height,
+                life_time)
+
+    def get_lifetimes(self, addresses):
+        return [self.get_lifetime(address) for address in addresses]

@@ -20,11 +20,11 @@ WhiteRabbit runs on `python 3.6.x`.
 
 3. Install Python dependencies.
 
-`pip install -r requirements.txt`
+`pip3 install -r requirements.txt`
 
 ## Running WhiteRabbit
 
-`python3 whiterabbit_main.py --seeds import/seed_addresses.csv`
+`python3 whiterabbit_main.py`
 
 ## Configurations
 
