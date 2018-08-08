@@ -1,4 +1,4 @@
-address,malware,first_seen,source,type
+address,malware,first_seen,source
 19gdjoWaE8i9XPbWoDbixev99MvvXUSNZL,cryptowallet hijacker,2018-06-30,bleepingcomputer.com
 135N2nfAkextd6E25quXpM98qLSi2BccCb,cryptolocker,2013-09-05,reddit.com
 1AEoiHY23fbBn8QiJ5y6oAjrhRY1Fb85uc,cryptolocker,2013-09-05,bleepingcomputer.com

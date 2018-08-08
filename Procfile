@@ -1,1 +1,1 @@
-web gunicorn app:app --preload
+web gunicorn whiterabbit_main:app --preload
