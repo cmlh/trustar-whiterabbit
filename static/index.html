@@ -103,6 +103,7 @@
                 <div class="col-md-12 col-sm-12" style="display:inline;">
                     <div id="balance-info" style="padding: 10px;">
                         <p>Click on a <em>Malware Family</em> to view the historical balances of that campaign's attacker's Bitcoin wallet.</p>
+                        <button class="btn btn-default">Export</button>
                     </div>
                     <div id="balances"></div>
                 </div>
@@ -184,7 +185,7 @@
 
     var margin = {top: 20, right: 20, bottom: 60, left: 80};
     var legendMargin = 45;
-    var width = window.outerWidth - margin.left - margin.right - window.innerWidth/3;
+    var width = window.innerWidth - margin.left - margin.right - window.innerWidth/3;
     var height = 400 - margin.top - margin.bottom;
     var parseDate = d3.timeFormat("%Y-%m-%d %H:%M:%S");
     var x = d3.scaleLinear().range([0, width - legendMargin]);

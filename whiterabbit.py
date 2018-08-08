@@ -25,15 +25,22 @@ class WhiteRabbit:
         """Fetch the precomputed historical balances for the given family."""
         self.logger.info("Getting history for family %s", family)
         if family:
-            balances_list = []
+            clusters_by_min_height = {}
+            clusters_list = []
             # Find the file in that directory with the malware family as the prefix
             for file in os.listdir("balances"):
                 start_string = family.replace(" ", "_") + "_balance"
                 if file.startswith(start_string) & file.endswith(".csv"):
                     balances_csv = os.path.join("balances", file)
-                    self.logger.info(balances_csv)
                     df = pd.read_csv(balances_csv)
                     chart_data = df.to_dict(orient='records')
-                    balances_list.append(chart_data)
-            return Response(dumps(balances_list), mimetype="application/json")
+                    clusters_list.append(chart_data)
+            # Sort list of clusters by their minimum block height
+            for cluster in clusters_list:
+                heights = [i['height'] for i in cluster]
+                min_height = min(heights)
+                clusters_by_min_height[min_height] = cluster
+            sorted_clusters = sorted(clusters_by_min_height.items(), key=lambda k:k)
+            sorted_clusters_list = [ item[1] for item in sorted_clusters ]
+            return Response(dumps(list(sorted_clusters_list)), mimetype="application/json")
         return "Failed to fetch balances"
