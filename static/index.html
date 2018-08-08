@@ -8,19 +8,8 @@
 </head>
 
 <body>
-<div role="navigation" class="navbar navbar-default navbar-static-top">
-    <div class="container">
-        <div class="row">
-            <div class="navbar-header">
-                <div class="navbar-brand">
-                    <div class="brand">WhiteRabbit: Follow the Bitcoin Rabbithole</div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
-<div class="row" style="margin-left: 30px; margin-right: 30px;">
+<div class="row" style="margin: 30px;">
     <div class="col-md-3 col-sm-3">
         <div class="panel panel-default">
             <div class="panel-heading">Ransomware Campaigns</div>
@@ -38,10 +27,34 @@
     </div>
     <div class="col-md-9 col-sm-9">
         <div class="panel panel-default">
-            <div class="panel-heading" id="balances-header">Historical Balances</div>
+            <div class="panel-heading">Using WhiteRabbit</div>
             <div class="row">
-                <div class="col-md-12 col-sm-12" style="display:inline; height:1200px">
+                <div class="col-md-12 col-sm-12" style="display:inline;">
+                    <div style="padding: 20px; overflow-wrap:break-word;">
+                        WhiteRabbit is an open source tool that allows security professionals to associate Bitcoin Addresses to known malware campaigns and track payments made to these addresses. We are hoping to provide a tool that can act as an early warning system for SOC analysts, threat hunters and researchers, and other defenders out there, that leverages the bitcoin public and immutable ledger data. Given the rise of importance of cryptocurrencies both in general and within the security context we propose that Bitcoin (and other cryptocurrencies) Addresses should be added as indicators to the “Pyramid of Pain”. The interesting aspect of cryptocurrency addresses is that they share characteristics of both hashes and TTPs.
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading" id="balances-header">Historical Balance</div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12" style="display:inline;">
+                    <div id="balance-info" style="padding: 10px;">
+                        <p>Click on a <b>Malware Family</b> to view the historical balances of that campaign's attacker's Bitcoin wallet.</p>
+                    </div>
                     <div id="balances"></div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading" id="clusters-header">Historical Balance of Individual Clusters</div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12" style="display:inline;">
+                    <div id="cluster-info" style="padding: 10px;">
+                        <p>Click on a <b>Malware Family</b> to view the <em>individual</em> historical balances of <em>each cluster</em> in that campaign's attacker's Bitcoin wallet.</p>
+                    </div>
+                    <div id="cluster-balances"></div>
                 </div>
             </div>
         </div>
@@ -62,18 +75,15 @@
   stroke-width: 2px;
 }
 
-.malware, .first_seen {
+.campaign {
   font-size: 12px;
 }
 
-.navbar-default {
-  background-color: #3568D5;
-  border-color:#3568D5;
+.campaign:hover {
+  color: #3568D5;
+  cursor: pointer;
 }
-.navbar-default .navbar-brand {
-  color: #F7F7F7;
-  letter-spacing: 1px;
-}
+
 </style>
 
 <script src="https://d3js.org/d3.v4.min.js"></script>
@@ -84,16 +94,17 @@
     var color = d3.scaleOrdinal(d3.schemeCategory20);
 
     var margin = {top: 20, right: 20, bottom: 50, left: 80};
-    var width = window.innerWidth - margin.left - margin.right - window.innerWidth/3;
-    var height = 600 - margin.top - margin.bottom;
+    var width = window.outerWidth - margin.left - margin.right - window.innerWidth/3;
+    var height = 400 - margin.top - margin.bottom;
     var parseDate = d3.timeFormat("%Y-%m-%d %H:%M:%S");
-    var x = d3.scaleLinear().range([0, width]);
+    var x = d3.scaleLinear().range([0, width - margin.right]);
     var y = d3.scaleLinear().range([height, 0]);
 
     function renderBalances(family) {
 
         $("#usd-svg").remove();
         $("#btc-svg").remove();
+        $('[id^="each-btc-svg-"]').remove();
         var usdSvg = d3.select("div #balances").append("svg")
             .attr("id","usd-svg")
             .attr("width", width + margin.left + margin.right)
@@ -128,6 +139,7 @@
                 });
             });
 
+            // USD Balance x Time Line Graph
             var usd_array = [].concat.apply([],data.map(d => d.map(d2 => d2.usd)))
             usdy = y.domain([Math.min(...usd_array),Math.max(...usd_array)]);
 
@@ -135,9 +147,8 @@
                 var date_array = [].concat.apply([],data.map(d => d.map(d2 => d2.date)))
                 datex = x.domain(d3.extent(date_array, function(d) { return d; }));
             } else {
-                datex = d3.scaleTime().range([0, width])
+                datex = d3.scaleTime().range([0, width - margin.right])
             }
-
 
             data.forEach(function(d, i) {
                 usdSvg.append("path")
@@ -150,12 +161,12 @@
 
             usdSvg.append("g")
                .attr("transform", "translate(0," + height + ")")
-               .call(d3.axisBottom(datex).ticks(6).tickFormat(d3.timeFormat("%b %Y")));
+               .call(d3.axisBottom(datex).ticks(10).tickFormat(d3.timeFormat("%d %b %y")));
 
             usdSvg.append("text")
             .attr("transform","translate(" + (width/2) + " ," + (height + margin.top + 20) + ")")
             .style("text-anchor", "middle")
-            .text("Block Time");
+            .text("Time");
 
             usdSvg.append("g")
                .call(d3.axisLeft(usdy));
@@ -168,6 +179,14 @@
             .style("text-anchor", "middle")
             .text("Balance (USD)");
 
+            usdSvg.append('text')
+            .html('Attacker Wallet Balance in U.S. Dollars over Time')
+            .attr('x', width / 2)
+            .attr('text-anchor', 'middle');
+
+
+
+            // BTC Balance x Block Height Line Graph
             var height_array = [].concat.apply([],data.map(d => d.map(d2 => d2.height)))
             heightx = x.domain([Math.min(...height_array),Math.max(...height_array)]);
 
@@ -203,25 +222,77 @@
             .style("text-anchor", "middle")
             .text("Balance (BTC)");
 
+            btcSvg.append('text')
+            .html('Attacker Wallet Balance in BTC over Block Height')
+            .attr('x', width / 2)
+            .attr('text-anchor', 'middle');
+
+
+            // Individual Clusters
+            data.forEach(function(d, i) {
+                if (d.length > 1) {
+                    var each_height_array = [].concat.apply([],d.map(d2 => d2.height))
+                    var each_heightx = x.domain([Math.min(...height_array),Math.max(...each_height_array)]);
+                    var each_btc_array = [].concat.apply([],d.map(d2 => d2.balance))
+                    var btcy = y.domain([Math.min(...btc_array),Math.max(...each_btc_array)]);
+
+                    var eachBtcSvg = d3.select("div #cluster-balances").append("svg")
+                        .attr("id","each-btc-svg-" + i)
+                        .attr("width", width + margin.left + margin.right)
+                        .attr("height", height + margin.top + margin.bottom)
+                        .append("g")
+                        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+                    eachBtcSvg.append("path")
+                        .style("fill", "none")
+                        .attr("id", "balances"+i)
+                        .style("stroke", function(d) { return color(i); })
+                        .attr("class", "line")
+                        .attr("d", btcLine(d));
+
+                    eachBtcSvg.append("g")
+                       .attr("transform", "translate(0," + height + ")")
+                       .call(d3.axisBottom(heightx));
+
+                    eachBtcSvg.append("text")
+                        .attr("transform","translate(" + (width/2) + " ," + (height + margin.top + 20) + ")")
+                        .style("text-anchor", "middle")
+                        .text("Block Height");
+
+                    eachBtcSvg.append("g")
+                       .call(d3.axisLeft(btcy));
+
+                    eachBtcSvg.append("text")
+                        .attr("transform", "rotate(-90)")
+                        .attr("y", 0 - margin.left + 10)
+                        .attr("x", 0 - (height / 2))
+                        .attr("dy", "1em")
+                        .style("text-anchor", "middle")
+                        .text("Balance (BTC)");
+
+                    eachBtcSvg.append('text')
+                        .html('Cluster ' + (i + 1) + ': Attacker Wallet Balance in BTC over Block Height')
+                        .attr('x', width / 2)
+                        .attr('text-anchor', 'middle');
+                }
+            });
        })
     }
 </script>
 
 <script type="text/javascript">
     $(function () {
-        function capitalize(str) {
-            return str.charAt(0).toUpperCase() + str.slice(1)
-        }
         function showMalwareFamilies(family) {
             $.get("/malware",
                     function (data) {
                         var t = $("table#results tbody").empty();
                         if (!data || data.length == 0) return;
                         data.forEach(function (malware) {
-                            $("<tr><td class='malware'>" + malware.family.toUpperCase() + "</td><td class='first_seen'>" + malware.first_seen + "</td></tr>").appendTo(t)
+                            $("<tr class='campaign'><td class='malware'>" + malware.family.toUpperCase() + "</td><td>" + malware.first_seen + "</td></tr>").appendTo(t)
                             .click(function() {
                                 var malware = $(this).find("td.malware").text().toLowerCase();
-                                $("#balances-header").text("Historical Balance of  " + capitalize(malware.toUpperCase()) + " Clusters");
+                                $("#balances-header").text("Historical Balance of All " + malware.toUpperCase() + " Clusters");
+                                $("#clusters-header").text("Historical Balance of Individual " + malware.toUpperCase() + " Clusters");
                                 renderBalances(malware);
                             })
                         });

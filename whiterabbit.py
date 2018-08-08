@@ -16,8 +16,10 @@ class WhiteRabbit:
         self.logger.info("Fetching list of malware families")
         with open("import/seed_addresses.csv", "r") as csvfile:
             reader = csv.DictReader(csvfile)
-            families = {row["malware"]: {"family": row["malware"], "first_seen": row["first_seen"]} for row in reader}
-        return Response(dumps(list(families.values())), mimetype="application/json")
+            families_map = {row["malware"]: {"family": row["malware"], "first_seen": row["first_seen"]} for row in reader}
+            families_list = list(families_map.values())
+            sorted_families_list = sorted(families_list, key=lambda k:k['first_seen'])
+        return Response(dumps(sorted_families_list), mimetype="application/json")
 
     def get_balances(self, family):
         """Fetch the precomputed historical balances for the given family."""
