@@ -24,14 +24,75 @@
                 </tbody>
             </table>
         </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">How Does It Work</div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12" style="display:inline;">
+                    <div style="padding: 10px 10px 10px 0px; overflow-wrap:break-word;">
+                        <ol>
+                            <li>
+                                Collect Bitcoin addresses observed with ransomware binaries. These Bitcoin addresses are
+                                known as <b>seed addresses</b>. They are the Bitcoin addresses used to collect money from the victims.
+                            </li>
+                            <li>
+                                Leverage the most up to date Bitcoin blockchain information to reconstruct the <b>clusters</b> of
+                                Bitcoin addresses associated to the same ransomware family. We computed these clusters by running
+                                <span class="code">python3 compute_clusters_main.py</span> from
+                                our <a href="https://github.com/trustar/trustar-whiterabbit" target="_blank">Github repository</a>.
+                            </li>
+                            <li>
+                                The balance of the cluster with its peaks and valleys can be used as an indicator of money flowing to, or being cashed out by, the criminals. Because we know with a high certainty that these clusters are associated with the ransomware family, security operators can, by determining that certain cluster balances are trending up, assume with high fidelity that a new variant of certain ransomware type is ramping up.
+                            </li>
+                            <li>
+                                The amount of money paid to the bad actors can also give the operator a sense of the severity of the attack. Usually, victims pay the criminals when they are desperate to recover their data, i.e., the higher the severity the more money will be paid. Once security operators determine which ransomware family is trending up they can be on the lookout and focus on collecting other indicator types associated to that ransomware.
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="col-md-9 col-sm-9">
         <div class="panel panel-default">
-            <div class="panel-heading">Using WhiteRabbit</div>
+            <div class="panel-heading">WhiteRabbit: Follow the Rabbit Hole</div>
             <div class="row">
                 <div class="col-md-12 col-sm-12" style="display:inline;">
-                    <div style="padding: 20px; overflow-wrap:break-word;">
-                        WhiteRabbit is an open source tool that allows security professionals to associate Bitcoin Addresses to known malware campaigns and track payments made to these addresses. We are hoping to provide a tool that can act as an early warning system for SOC analysts, threat hunters and researchers, and other defenders out there, that leverages the bitcoin public and immutable ledger data. Given the rise of importance of cryptocurrencies both in general and within the security context we propose that Bitcoin (and other cryptocurrencies) Addresses should be added as indicators to the “Pyramid of Pain”. The interesting aspect of cryptocurrency addresses is that they share characteristics of both hashes and TTPs.
+                    <div style="padding: 10px; overflow-wrap:break-word;">
+                        <p>
+                            WhiteRabbit is an open source tool that allows security professionals to associate Bitcoin addresses to known malware campaigns and track payments made to these addresses. We are aiming to provide a tool that acts as an early warning system that leverages the Bitcoin public, immutable ledger (transaction) data. Given the rise of prominence of cryptocurrencies in general and within the security context, we propose that Bitcoin (and other cryptocurrencies) addresses could be added as indicators to the “Pyramid of Pain” for an analyst, as it shares characteristics with both hashes (trivial -- botom of the pyramid) and TTPs (tough -- top of the pyramid).
+                            Read more in our <a href="https://www.trustar.co/blog" target="_blank">blog post</a> and check out our  <a href="https://github.com/trustar/trustar-whiterabbit" target="_blank">Github Repository</a>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">Get Started</div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12" style="display:inline;">
+                    <div style="padding: 10px; overflow-wrap:break-word;">
+                        <ol>
+                            <li>
+                                Click on a <em>Malware Family</em> on the left panel of Ransomware Campaigns.
+                            </li>
+                            <li>
+                                On the main panel, you'll find the historical balances of the wallet associated with the ransomware campaign's attacker.
+                            </li>
+                            <li>
+                                The two graphs under <em>Historical Balance of All Clusters</em> visualize the balances
+                                of all the clusters of BTC addresses that make up the wallet. The x-axis represents time across
+                                the duration of the wallet's activity. For the first graph the y-axis represents the balance of each
+                                individual cluster in U.S. Dollars. Due to the volatility in price of Bitcoin over the last few years,
+                                our other graphs measure the balance in BTC.
+                            </li>
+                            <li>
+                                The following graphs under <em>Historical Balance of Individual Clusters</em> separately visualize the balances
+                                of each of those individual clusters of BTC addresses that make up the wallet. The x-axis represents time across
+                                the duration of the wallet's activity. The y-axis represents the balance of that individual cluster in BTC. For
+                                some campaigns with multiple clusters, e.g. Cryptowall, we noticed that each cluster's balances decreased as a
+                                following  cluster's balances started to increase.
+                            </li>
+                        </ol>
                     </div>
                 </div>
             </div>
@@ -41,7 +102,7 @@
             <div class="row">
                 <div class="col-md-12 col-sm-12" style="display:inline;">
                     <div id="balance-info" style="padding: 10px;">
-                        <p>Click on a <b>Malware Family</b> to view the historical balances of that campaign's attacker's Bitcoin wallet.</p>
+                        <p>Click on a <em>Malware Family</em> to view the historical balances of that campaign's attacker's Bitcoin wallet.</p>
                     </div>
                     <div id="balances"></div>
                 </div>
@@ -52,7 +113,7 @@
             <div class="row">
                 <div class="col-md-12 col-sm-12" style="display:inline;">
                     <div id="cluster-info" style="padding: 10px;">
-                        <p>Click on a <b>Malware Family</b> to view the <em>individual</em> historical balances of <em>each cluster</em> in that campaign's attacker's Bitcoin wallet.</p>
+                        <p>Click on a <em>Malware Family</em> to view the individual historical balances of each cluster in that campaign's attacker's Bitcoin wallet.</p>
                     </div>
                     <div id="cluster-balances"></div>
                 </div>
@@ -62,26 +123,54 @@
 </div>
 <style>
 .links line {
-  stroke: #999;
-  stroke-opacity: 0.6;
+    stroke: #999;
+    stroke-opacity: 0.6;
 }
 
 .nodes circle:hover {
-  fill: #000;
+    fill: #000;
 }
 
 .line {
-  fill: none;
-  stroke-width: 2px;
+    fill: none;
+    stroke-width: 2px;
 }
 
 .campaign {
-  font-size: 12px;
+    font-size: 12px;
 }
 
 .campaign:hover {
-  color: #3568D5;
-  cursor: pointer;
+    color: #3568D5;
+    cursor: pointer;
+}
+
+.legend {
+    font-size: 10px;
+    font-weight: 100;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.graph-title {
+    font-size: 16px;
+    text-anchor: middle;
+    font-weight: 300;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.axis {
+    font-size: 12px;
+    text-anchor: middle;
+    text-transform: uppercase;
+}
+
+.code {
+    font-size: 12px;
+    background: #dfdfdf;
+    padding: 2px 5px;
+    font-family: monospace;
 }
 
 </style>
@@ -93,11 +182,12 @@
 
     var color = d3.scaleOrdinal(d3.schemeCategory20);
 
-    var margin = {top: 20, right: 20, bottom: 50, left: 80};
+    var margin = {top: 20, right: 20, bottom: 60, left: 80};
+    var legendMargin = 45;
     var width = window.outerWidth - margin.left - margin.right - window.innerWidth/3;
     var height = 400 - margin.top - margin.bottom;
     var parseDate = d3.timeFormat("%Y-%m-%d %H:%M:%S");
-    var x = d3.scaleLinear().range([0, width - margin.right]);
+    var x = d3.scaleLinear().range([0, width - legendMargin]);
     var y = d3.scaleLinear().range([height, 0]);
 
     function renderBalances(family) {
@@ -124,7 +214,7 @@
             .y(function(d) { return y(d.usd); });
 
         var btcLine = d3.line()
-            .x(function(d) { return x(d.height); })
+            .x(function(d) { return x(d.date); })
             .y(function(d) { return y(d.balance); });
 
         var parseDate = d3.timeParse("%Y-%m-%d %H:%M:%S");
@@ -132,7 +222,6 @@
             if (error) throw error;
             data.forEach(function(d1) {
                 d1.forEach(function(d2) {
-                    d2.height = +d2.height;
                     d2.usd = +d2.usd;
                     d2.balance = +d2.balance / 1e8;
                     d2.date = parseDate(d2.date)
@@ -141,22 +230,32 @@
 
             // USD Balance x Time Line Graph
             var usd_array = [].concat.apply([],data.map(d => d.map(d2 => d2.usd)))
-            usdy = y.domain([Math.min(...usd_array),Math.max(...usd_array)]);
+            var usdy = y.domain([Math.min(...usd_array),Math.max(...usd_array)]);
 
             if (data.length > 0) {
                 var date_array = [].concat.apply([],data.map(d => d.map(d2 => d2.date)))
-                datex = x.domain(d3.extent(date_array, function(d) { return d; }));
+                var datex = x.domain(d3.extent(date_array, function(d) { return d; }));
             } else {
-                datex = d3.scaleTime().range([0, width - margin.right])
+                var datex = d3.scaleTime().range([0, width - 50])
             }
 
             data.forEach(function(d, i) {
-                usdSvg.append("path")
-                .style("fill", "none")
-                .attr("id", "balances"+i)
-                .style("stroke", function(d) { return color(i); })
-                .attr("class", "line")
-                .attr("d", usdLine(d));
+                if (d.length > 1) {
+                    usdSvg.append("path")
+                        .style("fill", "none")
+                        .attr("id", "balances"+i)
+                        .style("stroke", function(d) { return color(i); })
+                        .attr("class", "line")
+                        .attr("d", usdLine(d));
+
+                    // Legend
+                    usdSvg.append("text")
+                        .attr("x", width - legendMargin)
+                        .attr("y", i * 20)
+                        .attr("class", "legend")
+                        .text("Cluster " + i)
+                        .style("stroke", function(d) { return color(i); });
+                }
             });
 
             usdSvg.append("g")
@@ -164,75 +263,79 @@
                .call(d3.axisBottom(datex).ticks(10).tickFormat(d3.timeFormat("%d %b %y")));
 
             usdSvg.append("text")
-            .attr("transform","translate(" + (width/2) + " ," + (height + margin.top + 20) + ")")
-            .style("text-anchor", "middle")
-            .text("Time");
+                .attr("transform","translate(" + (width/2) + " ," + (height + margin.top + 15) + ")")
+                .attr("class", "axis")
+                .text("Time");
 
             usdSvg.append("g")
-               .call(d3.axisLeft(usdy));
+                .call(d3.axisLeft(usdy));
 
             usdSvg.append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 0 - margin.left + 10)
-            .attr("x", 0 - (height / 2))
-            .attr("dy", "1em")
-            .style("text-anchor", "middle")
-            .text("Balance (USD)");
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0 - margin.left + 10)
+                .attr("x", 0 - (height / 2))
+                .attr("dy", "1em")
+                .attr("class", "axis")
+                .text("Balance (USD)");
 
             usdSvg.append('text')
-            .html('Attacker Wallet Balance in U.S. Dollars over Time')
-            .attr('x', width / 2)
-            .attr('text-anchor', 'middle');
-
+                .html('Attacker Wallet Balance in U.S. Dollars over Time')
+                .attr('x', width / 2)
+                .attr("class", "graph-title");
 
 
             // BTC Balance x Block Height Line Graph
-            var height_array = [].concat.apply([],data.map(d => d.map(d2 => d2.height)))
-            heightx = x.domain([Math.min(...height_array),Math.max(...height_array)]);
-
             var btc_array = [].concat.apply([],data.map(d => d.map(d2 => d2.balance)))
-            btcy = y.domain([Math.min(...btc_array),Math.max(...btc_array)]);
+            var btcy = y.domain([Math.min(...btc_array),Math.max(...btc_array)]);
 
             data.forEach(function(d, i) {
-                btcSvg.append("path")
-                .style("fill", "none")
-                .attr("id", "balances"+i)
-                .style("stroke", function(d) { return color(i); })
-                .attr("class", "line")
-                .attr("d", btcLine(d));
+                if (d.length > 1) {
+                    btcSvg.append("path")
+                    .style("fill", "none")
+                    .attr("id", "balances"+i)
+                    .style("stroke", function(d) { return color(i); })
+                    .attr("class", "line")
+                    .attr("d", btcLine(d));
+
+                    // Legend
+                    btcSvg.append("text")
+                    .attr("x", width - legendMargin)
+                    .attr("y", i * 20)
+                    .attr("class", "legend")
+                    .text("Cluster " + i)
+                    .style("stroke", function(d) { return color(i); });
+                }
             });
 
             btcSvg.append("g")
                .attr("transform", "translate(0," + height + ")")
-               .call(d3.axisBottom(heightx));
+               .call(d3.axisBottom(datex).ticks(10).tickFormat(d3.timeFormat("%d %b %y")));
 
             btcSvg.append("text")
-            .attr("transform","translate(" + (width/2) + " ," + (height + margin.top + 20) + ")")
-            .style("text-anchor", "middle")
-            .text("Block Height");
+                .attr("transform","translate(" + (width/2) + " ," + (height + margin.top + 15) + ")")
+                .attr("class", "axis")
+                .text("Time");
 
             btcSvg.append("g")
-               .call(d3.axisLeft(btcy));
+                .call(d3.axisLeft(btcy));
 
             btcSvg.append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 0 - margin.left + 10)
-            .attr("x", 0 - (height / 2))
-            .attr("dy", "1em")
-            .style("text-anchor", "middle")
-            .text("Balance (BTC)");
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0 - margin.left + 10)
+                .attr("x", 0 - (height / 2))
+                .attr("dy", "1em")
+                .attr("class", "axis")
+                .text("Balance (BTC)");
 
             btcSvg.append('text')
-            .html('Attacker Wallet Balance in BTC over Block Height')
-            .attr('x', width / 2)
-            .attr('text-anchor', 'middle');
+                .html('Attacker Wallet Balance in BTC over Block Height')
+                .attr('x', width / 2)
+                .attr("class", "graph-title");
 
 
             // Individual Clusters
             data.forEach(function(d, i) {
                 if (d.length > 1) {
-                    var each_height_array = [].concat.apply([],d.map(d2 => d2.height))
-                    var each_heightx = x.domain([Math.min(...height_array),Math.max(...each_height_array)]);
                     var each_btc_array = [].concat.apply([],d.map(d2 => d2.balance))
                     var btcy = y.domain([Math.min(...btc_array),Math.max(...each_btc_array)]);
 
@@ -251,13 +354,13 @@
                         .attr("d", btcLine(d));
 
                     eachBtcSvg.append("g")
-                       .attr("transform", "translate(0," + height + ")")
-                       .call(d3.axisBottom(heightx));
+                        .attr("transform", "translate(0," + height + ")")
+                        .call(d3.axisBottom(datex).ticks(10).tickFormat(d3.timeFormat("%d %b %y")));
 
                     eachBtcSvg.append("text")
-                        .attr("transform","translate(" + (width/2) + " ," + (height + margin.top + 20) + ")")
+                        .attr("transform","translate(" + (width/2) + " ," + (height + margin.top + 15) + ")")
                         .style("text-anchor", "middle")
-                        .text("Block Height");
+                        .text("Time");
 
                     eachBtcSvg.append("g")
                        .call(d3.axisLeft(btcy));
@@ -271,9 +374,9 @@
                         .text("Balance (BTC)");
 
                     eachBtcSvg.append('text')
-                        .html('Cluster ' + (i + 1) + ': Attacker Wallet Balance in BTC over Block Height')
+                        .html('Cluster ' + (i + 1) + ': Attacker Wallet Balance in BTC over Time')
                         .attr('x', width / 2)
-                        .attr('text-anchor', 'middle');
+                        .attr("class", "graph-title");
                 }
             });
        })
@@ -294,6 +397,8 @@
                                 $("#balances-header").text("Historical Balance of All " + malware.toUpperCase() + " Clusters");
                                 $("#clusters-header").text("Historical Balance of Individual " + malware.toUpperCase() + " Clusters");
                                 renderBalances(malware);
+                                $("#balance-info").hide();
+                                $("#cluster-info").hide();
                             })
                         });
                     }, "json");
