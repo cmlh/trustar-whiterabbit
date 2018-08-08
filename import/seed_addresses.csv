@@ -6,21 +6,21 @@ address,malware,first_seen,source
 1KP72fBmh3XBRfuJDMn53APaqM6iMRspCh,cryptolocker,2013-09-05,reddit.com
 19DyWHtgLgDKgEeoKjfpCJJ9WU8SQ3gr27,cryptodefense,2014-02-20,symantec.com
 1EmLLj8peW292zR2VvumYPPa9wLcK4CPK1,cryptodefense,2014-02-20,symantec.com
-1PoebUjR5pdH88tc9ECQ1PCLaCrtPnG9fm,cryptowall,2013-11-01,malwaretips.com
-128pJdREzcR6xorYPQAPzGf8RwMQjRBzDt,cryptowall,2013-11-01,researchcenter.paloaltonetworks.com
-15WUYqKerTtxi4rUEmnakw5gRMkr3nZCQd,cryptowall,2013-11-01,blog.rackspace.com
-1L66AcnbuZkYjs8eE6uVbTUxmorHYGKxFJ,cryptowall,2013-11-01,brilliantit
-16REtGSobiQZoprFnXZBR2mSWvRyUSJ3ag,cryptowall,2013-11-01,malware-traffic-analysis.net
-16Z6sidfLrfNoxJNu4qM5zhRttJEUD3XoB,cryptowall,2013-11-01,malware-traffic-analysis.net
-12LE1yNak3ZuNTLa95KYR2CQSKb6rZnELb,cryptowall,2013-11-01,threatpost.com
-1JYYzNHDaGC7noiE4eKatuYA4AThqVocDd,cryptowall,2013-11-01,botfree.ro
-1BhLzCZGY6dwQYgX4B6NR5sjDebBPNapvv,cryptowall,2013-11-01,2-spyware.com
-16yd1Wj2NZa2uLZ6W4UDCDJ2Ttw92uFaT7,cryptowall,2013-11-01,enigmasoftware.com
-1LGnuv6KX9SXB8eM72dnBAcECeaC8Z2zje,cryptowall,2013-11-01,securitystronghold.com
-1L7SLmazbbcy614zsDSLwz4bxz1nnJvDeV,cryptowall,2013-11-01,phishme.com
-19yqWit95eFGmUTYDLr3memcDoJiYgUppc,cryptowall,2013-11-01,phishme.com
-16N3jvnF7UhRh74TMmtwxpLX6zPQKPbEbh,cryptowall,2013-11-01,phishme.com
-1ApF4XayPo7Mtpe326o3xMnSgrkZo7TCWD,cryptowall,2013-11-01,phishme.com
+1PoebUjR5pdH88tc9ECQ1PCLaCrtPnG9fm,cryptowall,2014-04-01,malwaretips.com
+128pJdREzcR6xorYPQAPzGf8RwMQjRBzDt,cryptowall,2014-04-01,researchcenter.paloaltonetworks.com
+15WUYqKerTtxi4rUEmnakw5gRMkr3nZCQd,cryptowall,2014-04-01,blog.rackspace.com
+1L66AcnbuZkYjs8eE6uVbTUxmorHYGKxFJ,cryptowall,2014-04-01,brilliantit
+16REtGSobiQZoprFnXZBR2mSWvRyUSJ3ag,cryptowall,2014-04-01,malware-traffic-analysis.net
+16Z6sidfLrfNoxJNu4qM5zhRttJEUD3XoB,cryptowall,2014-04-01,malware-traffic-analysis.net
+12LE1yNak3ZuNTLa95KYR2CQSKb6rZnELb,cryptowall,2014-04-01,threatpost.com
+1JYYzNHDaGC7noiE4eKatuYA4AThqVocDd,cryptowall,2014-04-01,botfree.ro
+1BhLzCZGY6dwQYgX4B6NR5sjDebBPNapvv,cryptowall,2014-04-01,2-spyware.com
+16yd1Wj2NZa2uLZ6W4UDCDJ2Ttw92uFaT7,cryptowall,2014-04-01,enigmasoftware.com
+1LGnuv6KX9SXB8eM72dnBAcECeaC8Z2zje,cryptowall,2014-04-01,securitystronghold.com
+1L7SLmazbbcy614zsDSLwz4bxz1nnJvDeV,cryptowall,2014-04-01,phishme.com
+19yqWit95eFGmUTYDLr3memcDoJiYgUppc,cryptowall,2014-04-01,phishme.com
+16N3jvnF7UhRh74TMmtwxpLX6zPQKPbEbh,cryptowall,2014-04-01,phishme.com
+1ApF4XayPo7Mtpe326o3xMnSgrkZo7TCWD,cryptowall,2014-04-01,phishme.com
 1MrKJhiECV3RufrY1dSybSXRCwSw11Co6i,dma locker,2015-12-21,youtube.com/user/MrRemoveVirus
 1C8yA7wJuKD4D2giTEpUNcdd7UNExEJ45r,dma locker,2015-12-21,dfwci.com
 166vHLnGB1pCQGxdBkRiMkHW5WGQDbsw6s,dma locker,2015-12-21,malwarebytes.com
