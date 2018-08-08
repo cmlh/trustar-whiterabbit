@@ -19,8 +19,8 @@ def get_malware_families():
 
 
 @app.route("/balances/<family>")
-def get_balances(family):
-    return whiterabbitTool.get_balances(family)
+def get_cluster_balances(family):
+    return whiterabbitTool.get_cluster_balances(family)
 
 
 if __name__ == '__main__':

@@ -21,20 +21,17 @@ class WhiteRabbit:
             sorted_families_list = sorted(families_list, key=lambda k:k['first_seen'])
         return Response(dumps(sorted_families_list), mimetype="application/json")
 
-    def get_balances(self, family):
+    def get_cluster_balances(self, family):
         """Fetch the precomputed historical balances for the given family."""
         self.logger.info("Getting history for family %s", family)
         if family:
             clusters_by_min_height = {}
             clusters_list = []
-            # Find the file in that directory with the malware family as the prefix
-            for file in os.listdir("balances"):
-                start_string = family.replace(" ", "_") + "_balance"
-                if file.startswith(start_string) & file.endswith(".csv"):
-                    balances_csv = os.path.join("balances", file)
-                    df = pd.read_csv(balances_csv)
-                    chart_data = df.to_dict(orient='records')
-                    clusters_list.append(chart_data)
+            csv_list = self.get_cluster_balance_files(family)
+            for csv_file in csv_list:
+                df = pd.read_csv(csv_file)
+                chart_data = df.to_dict(orient='records')
+                clusters_list.append(chart_data)
             # Sort list of clusters by their minimum block height
             for cluster in clusters_list:
                 heights = [i['height'] for i in cluster]
@@ -43,4 +40,14 @@ class WhiteRabbit:
             sorted_clusters = sorted(clusters_by_min_height.items(), key=lambda k:k)
             sorted_clusters_list = [ item[1] for item in sorted_clusters ]
             return Response(dumps(list(sorted_clusters_list)), mimetype="application/json")
-        return "Failed to fetch balances"
+        return "Failed to fetch cluster balances"
+
+    @staticmethod
+    def get_cluster_balance_files(family):
+        """Find the files in that directory with the malware family as the prefix"""
+        csv_list = []
+        for file in os.listdir("balances"):
+            start_string = family.replace(" ", "_") + "_balance"
+            if file.startswith(start_string) & file.endswith(".csv"):
+                csv_list.append(os.path.join("balances", file))
+        return csv_list

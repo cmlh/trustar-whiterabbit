@@ -39,11 +39,6 @@ class ComputeClusters:
                         # Get the cluster for just the given address
                         cluster_by_address = self.chain.cluster_by_address(cluster=cluster, address=address)
                         if cluster_by_address:
-                            # Save addresses in in CSV
-                            cluster_addresses = self.chain.get_cluster_addresses(cluster_by_address)
-                            if cluster_addresses:
-                                self.save_cluster_addresses(seed=address, addresses=cluster_addresses)
-
                             # Save the historical balances, by block, in CSV
                             cluster_balances = self.chain.get_cluster_balances(cluster_by_address, start)
                             if cluster_balances:
@@ -54,14 +49,6 @@ class ComputeClusters:
             self.logger.error(e)
             return "Failed to cluster"
 
-    def save_cluster_addresses(self, seed, addresses):
-        self.logger.info("Saving %d cluster addresses for seed %s", len(addresses), seed)
-        with open("balances/%s_addresses_cluster_%s.csv", 'wb') as csvfile:
-            wr = csv.writer(csvfile)
-            wr.writerow(addresses)
-
     def save_cluster_balances(self, seed, malware, df):
         self.logger.info("Saving cluster balances for seed %s and malware family %s", seed, malware)
-        self.logger.info(df)
-        self.logger.info("Saving to csv now.")
         df.to_csv("balances/%s_balance_cluster_%s.csv".format(malware, seed), index=False)
