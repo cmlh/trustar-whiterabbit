@@ -29,12 +29,16 @@ Logging can be configured from `config/logging.conf`
 WhiteRabbit runs on `python 3.5.x`.
 
 1. Follow BlockSci instructions (https://citp.github.io/BlockSci/readme.html#quick-setup-using-amazon-ec2) 
-for setting up an EC2 instance to run BlockSci.
+for setting up an EC2 instance to run BlockSci. 
 
-2. Create a file named `seed_addresses.csv` in the `import` directory. Add the following columns to the 
-csb file: `address,malware,first_seen,source`.
+2. You can disregard the other steps if you only want to experiment or interested in 
+one particular seed address. An easy way is to follow the instructions given by 
+the `CryptoLocker_Analysis.ipynb` notebook. This notebook should live on the same server as BlockSci. 
 
-3. If you would like to recompute the balances you need a to run the following on the EC2 instance 
+3. Create a file named `seed_addresses.csv` in the `import` directory. Add the following columns to the 
+csb file: `address,malware,first_seen,source`.  
+
+4. If you would like to recompute the balances you need a to run the following on the EC2 instance 
 running BlockSci. 
 
 `python3 compute_clusters_main.py` 
@@ -43,7 +47,7 @@ The working directory for BlockSci is `/home/ubuntu/bitcoin` (We noticed that Bl
 an `r4.2xlarge` instance as recommended by the developers of BlockSci. Make sure you shut down 
 the EC2 instance after you finish computing).
 
-4. Once clustering is done the script computes their balances and stores them to:
+5. Once clustering is done the script computes their balances and stores them to:
 `balances/family_balance_cluster_#.csv`
 These balances are computed at transaction times where their associated Bitcoin Addresses were part 
 of the transaction inputs or outputs. The balance data has the following columns:
